@@ -60,7 +60,7 @@ Add these to your `package.json`:
 ## Install files using install script
 
 ```bash
-install.js <dest_dir>
+installer.js <dest_dir>
 ```
 will copy the config files into <dest_dir> and install the lint/format targets in
 scripts: {} in package.json.
