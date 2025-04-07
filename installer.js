@@ -17,7 +17,7 @@ if (!fs.existsSync(dest_dir)) {
 
 const install_files = [
 	'.prettierrc',
-	'.eslint.cjs',
+	'.eslintrc.cjs',
 	'.eslintignore',
 	['.vscode/extensions.json', '.vscode/extensions.json'],
 	['.vscode/settings.json', '.vscode/settings.json'],

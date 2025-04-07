@@ -2,11 +2,21 @@
 
 Default config for VSCode, ESLint and prettier, both for editor and command line.
 
-## Setup
+## Manual Install
 
 - Copy `.vscode/*` for editor and extension config
 - Copy `.eslintrc.cjs`/`.eslintignore` for eslint config
 - Copy `.prettierrc` for prettier config
+
+## Scripted Install
+
+```bash
+installer.js <dest_dir>
+```
+will copy the config files into <dest_dir> and install the lint/format targets in
+scripts: {} in package.json.
+
+Warning: Will overwrite current config files and may shuffle the order of entries in package.json.
 
 ## Required Packages
 
@@ -58,12 +68,4 @@ Add these to your `package.json`:
 - remark (preview MD files inside VSCode)
 
 ## Install files using install script
-
-```bash
-installer.js <dest_dir>
-```
-will copy the config files into <dest_dir> and install the lint/format targets in
-scripts: {} in package.json.
-
-Warning: Will overwrite current config files and may shuffle the order of entries in package.json.
 
