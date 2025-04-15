@@ -19,6 +19,7 @@ const install_files = [
 	'.prettierrc',
 	'.eslintrc.cjs',
 	'.eslintignore',
+	'.editorconfig',
 	['.vscode/extensions.json', '.vscode/extensions.json'],
 	['.vscode/settings.json', '.vscode/settings.json'],
 ];

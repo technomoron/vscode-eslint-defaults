@@ -7,6 +7,7 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 - Copy `.vscode/*` for editor and extension config
 - Copy `.eslintrc.cjs`/`.eslintignore` for eslint config
 - Copy `.prettierrc` for prettier config
+- Copy `.editorconfig` for universal editor config (cross editor)
 
 ## Scripted Install
 
