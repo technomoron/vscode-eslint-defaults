@@ -25,4 +25,10 @@ jobs:
           rm -rf package-temp
 
       - name: Upload both archives to GitHub Release
-        uses: softprops/a
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            installer.tgz
+            installer.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
