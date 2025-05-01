@@ -82,6 +82,7 @@ export default [
 	// importPlugin,
 	{
 		ignores: [
+			'configure-eslint.js',
 			'dist',
 			'node_modules',
 			'*.config.js',
