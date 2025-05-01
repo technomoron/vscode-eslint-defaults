@@ -23,11 +23,20 @@ const incantation_scripts = {
   lintfix: 'eslint --fix --ext .js,.ts,.vue ./',
   pretty: 'prettier --write "**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}"',
   format: 'npm run lintfix && npm run pretty',
+  "cleanbuild": "rm -rf ./dist/ && npm run lintfix && npm run format && npm run build",
 };
 
-function summon(command) {
+function summon(command, allowFail = false) {
   console.log(`\n🔮 ${command}`);
-  execSync(command, { stdio: 'inherit' });
+  try {
+    execSync(command, { stdio: 'inherit' });
+  } catch (err) {
+    if (allowFail) {
+      console.warn(`⚠️  Command failed (ignored): ${command}`);
+    } else {
+      throw err;
+    }
+  }
 }
 
 function inscribe_package_scroll() {
@@ -43,11 +52,10 @@ function inscribe_package_scroll() {
 
   for (const [rune, incantation] of Object.entries(incantation_scripts)) {
     if (spellbook.scripts[rune]) {
-      console.warn(`👻 Rune "${rune}" already etched — skipping.`);
-    } else {
-      spellbook.scripts[rune] = incantation;
-      console.log(`✨ Etched rune "${rune}" into the scroll.`);
+      console.warn(`👻 Rune "${rune}" already etched — replacing.`);
     }
+    spellbook.scripts[rune] = incantation;
+    console.log(`✨ Etched rune "${rune}" into the scroll.`);
   }
 
   fs.writeFileSync(scroll_path, JSON.stringify(spellbook, null, 2) + '\n');
@@ -66,12 +74,12 @@ function brew_dependencies() {
 
   if (has_pnpm_charm) {
     console.log('🟣 Casting spells with pnpm...');
-    summon(`pnpm remove ${banished_dependencies.join(' ')}`);
+    summon(`pnpm remove ${banished_dependencies.join(' ')}`, true);
     summon(`pnpm add -D ${cursed_dependencies.join(' ')}`);
   } else {
     console.log('🔵 Brewing with npm...');
     summon(`npm uninstall ${banished_dependencies.join(' ')}`);
-    summon(`npm install -D ${cursed_dependencies.join(' ')}`);
+    summon(`npm install -D ${cursed_dependencies.join(' ')}`, true);
   }
 
   console.log('🧪 Ritual complete. Dev dependencies enchanted.');
