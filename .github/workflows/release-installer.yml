@@ -1,0 +1,28 @@
+name: Build and Release Installer Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on tags like v1.0.0
+
+jobs:
+  release:
+    name: Create and upload installer packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Create .tgz and .zip archives
+        run: |
+          mkdir -p package-temp
+          cp -r installer/. package-temp/
+          cd package-temp
+          tar -czf ../installer.tgz .
+          zip -r ../installer.zip .
+          cd ..
+          rm -rf package-temp
+
+      - name: Upload both archives to GitHub Release
+        uses: softprops/a
