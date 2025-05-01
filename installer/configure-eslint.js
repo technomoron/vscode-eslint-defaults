@@ -2,7 +2,11 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const haunted_artifacts = ['.eslintignore', '.eslintrc.cjs'];
+const haunted_artifacts = [
+	'.eslintignore',
+	'.eslintrc.cjs',
+	'eslint.config.js'
+];
 
 const cursed_dependencies = [
 	'eslint@9.25.1',
