@@ -9,19 +9,19 @@ const haunted_artifacts = [
 ];
 
 const cursed_dependencies = [
-        'eslint@^9.x',
-        'prettier@^3.x',
-        'eslint-config-prettier@^8.x',
-        'eslint-plugin-prettier@^5.x',
-        'eslint-plugin-vue@^10.x',
-        'vue-eslint-parser@^10.x',
-        '@typescript-eslint/eslint-plugin@^8.x',
-        '@typescript-eslint/parser@^8.x',
-        '@vue/eslint-config-typescript@^14.x',
-        '@vue/eslint-config-prettier@^10.x',
-        'eslint-plugin-import@^2.x',
-        'eslint-plugin-nuxt@^4.x', // Optional: Only for Nuxt-specific linting
-        'eslint-import-resolver-alias@^1.x' // Optional: Only if using alias imports
+    'eslint@^9.25.1',
+    'prettier@^3.5.3',
+    'eslint-config-prettier@^10.1.5',
+    'eslint-plugin-prettier@^5.4.1',
+    'eslint-plugin-vue@^10.0.0',
+    'vue-eslint-parser@^10.1.3',
+    '@typescript-eslint/eslint-plugin@^8.30.1',
+    '@typescript-eslint/parser@^8.30.1',
+    '@vue/eslint-config-typescript@^14.5.0',
+    '@vue/eslint-config-prettier@^10.2.0',
+    'eslint-plugin-import@^2.31.0',
+    'eslint-plugin-nuxt@^4.0.0',
+    'eslint-import-resolver-alias@^1.1.2'
 ];
 
 const banished_dependencies = ['eslint', 'tslint'];
