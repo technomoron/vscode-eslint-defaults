@@ -7,23 +7,15 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -L https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.11/installer.tgz | tar -vxz && node configure-eslint.cjs && rm installer.tgz configure-eslint.cjs
+curl -L https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.12/installer.tgz | tar -vxz && node configure-eslint.cjs && rm installer.tgz configure-eslint.cjs
 ```
-<<<<<<< Updated upstream
-=======
-
-will copy the config files into <dest_dir> and install the lint/format targets in
-scripts: {} in package.json.
->>>>>>> Stashed changes
 
 Windows with Power Shell
 
 ```bash
-Invoke-WebRequest -Uri https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.11/installer.tgz -OutFile installer.tgz; tar -xvzf installer.tgz; node configure-eslint.cjs; Remove-Item -Force installer.tgz, configure-eslint.cjs
+Invoke-WebRequest -Uri https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.12/installer.tgz -OutFile installer.tgz; tar -xvzf installer.tgz; node configure-eslint.cjs; Remove-Item -Force installer.tgz, configure-eslint.cjs
 
 ```
-
-<<<<<<< Updated upstream
 The configure script will remove old eslint packages and add new ones,
 update eslint to v9.x and add some script targets to package.json
 =======
@@ -63,4 +55,3 @@ Add these to your `package.json`:
 - remark (preview MD files inside VSCode)
 
 ## Install files using install script
->>>>>>> Stashed changes
