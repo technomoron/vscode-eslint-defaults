@@ -1,6 +1,6 @@
 {
 	"name": "vscode-eslint-defaults",
-	"version": "1.0.12",
+	"version": "1.0.13",
 	"description": "Default editor config and eslint config for js/ts/vue",
 	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
 	"bugs": {
@@ -10,12 +10,12 @@
 		"type": "git",
 		"url": "git+ssh://git@github.com/documentmedia/vscode-eslint-defaults.git"
 	},
-	"license": "ISC",
-	"author": "",
+	"license": "MIT",
+	"author": "Technomoron",
 	"type": "javascript",
 	"private": true,
 	"engines": {
-		"node": ">=16.0.0"
+		"node": ">=18.0.0"
 	},
 	"main": "installer.js",
 	"scripts": {
