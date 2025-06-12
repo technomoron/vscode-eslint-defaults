@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-var dest_dir = process.argv[2];
+const dest_dir = process.argv[2];
 
 if (!dest_dir) {
 	console.error('Usage: node install.js <destination-directory>');
@@ -17,7 +17,7 @@ if (!fs.existsSync(dest_dir)) {
 
 const install_files = [
 	'.prettierrc',
-	'.eslintrc.cjs',
+	'.eslint.config.mjs',
 	'.eslintignore',
 	'.editorconfig',
 	['.vscode/extensions.json', '.vscode/extensions.json'],
@@ -27,7 +27,29 @@ const install_files = [
 const script_targets = {
 	lint: 'eslint --ext .js,.ts,.vue ./',
 	lintfix: 'eslint --fix --ext .js,.ts,.vue ./',
-	format: 'prettier --write "**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}"',
+	pretty: 'prettier --write "**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}"',
+	format: 'npm run pretty && npm run lintfix', // Combines pretty and lintfix
+};
+
+const dev_dependencies = {
+	'eslint': "^9.x",
+	'prettier': '^3.x"',
+	'eslint-config-prettier': "^10.x",
+	'eslint-plugin-prettier': "^5.x",
+
+	'eslint-plugin-vue': '^10.0.0',
+	'vue-eslint-parser": "^10.1.3'
+
+	'@typescript-eslint/eslint-plugin": "^8.x',
+	'@typescript-eslint/parser": "^8.x',
+
+	'@vue/eslint-config-typescript": "^14.x',
+	'@vue/eslint-config-prettier": "10.x',
+
+	'eslint-plugin-nuxt': "^4.0.0",
+
+	'eslint-plugin-import': '^2.31.0',
+	'eslint-import-resolver-alias': "^1.1.2",
 };
 
 install_files.forEach((file) => {
@@ -62,7 +84,7 @@ const pkgpath = path.join(dest_dir, 'package.json');
 try {
 	let json;
 	try {
-		let json_content = fs.readFileSync(pkgpath, 'utf8');
+		const json_content = fs.readFileSync(pkgpath, 'utf8');
 		json = JSON.parse(json_content);
 	} catch (error) {
 		console.error('Error reading package.json:', error.message);
@@ -82,7 +104,21 @@ try {
 		json.scripts[name] = cmd;
 	});
 
+	if (!json.devDependencies) {
+		json.devDependencies = {};
+	}
+
+	Object.entries(dev_dependencies).forEach(([pkg, version]) => {
+		if (pkg in json.devDependencies) {
+			console.warn(`Warning: Dependency "${pkg}" already exists in devDependencies`);
+		} else {
+			console.log(`Adding devDependency "${pkg}" with version "${version}" to package.json`);
+		}
+		json.devDependencies[pkg] = version;
+	});
+
 	fs.writeFileSync(pkgpath, JSON.stringify(json, null, 2) + '\n');
+	console.log('package.json updated successfully.');
 } catch (error) {
 	console.error('Error updating package.json:', error.message);
 }
