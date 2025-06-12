@@ -16,8 +16,10 @@ Windows with Power Shell
 Invoke-WebRequest -Uri https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.13/installer.tgz -OutFile installer.tgz; tar -xvzf installer.tgz; node configure-eslint.cjs; Remove-Item -Force installer.tgz, configure-eslint.cjs
 
 ```
+
 The configure script will remove old eslint packages and add new ones,
 update eslint to v9.x and add some script targets to package.json
+
 =======
 ## NPM Scripts
 
