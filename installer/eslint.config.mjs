@@ -2,7 +2,6 @@ import pluginVue from 'eslint-plugin-vue';
 import pluginPrettier from 'eslint-plugin-prettier';
 import pluginImport from 'eslint-plugin-import';
 import tsParser from '@typescript-eslint/parser';
-import vueEslintParser from 'vue-eslint-parser';
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
 
 export default [
@@ -23,24 +22,42 @@ export default [
 	...defineConfigWithVueTs(vueTsConfigs.recommended),
 	{
 		files: ['**/*.vue'],
-		languageOptions: {
-			parser: vueEslintParser,
-			parserOptions: {
-				parser: '@typescript-eslint/parser', // Use TypeScript parser for <script> sections
-				ecmaVersion: 2023,
-				sourceType: 'module',
-				extraFileExtensions: ['.vue']
-			}
+		plugins: {
+			vue: pluginVue,
+			prettier: pluginPrettier
+		},
+		rules: {
+			'prettier/prettier': 'error', // Enforce Prettier rules
+			'vue/html-indent': 'off', // Let Prettier handle indentation
+			'vue/max-attributes-per-line': 'off', // Let Prettier handle line breaks
+			'vue/first-attribute-linebreak': 'off', // Let Prettier handle attribute positioning
+			'vue/singleline-html-element-content-newline': 'off',
+			'vue/html-self-closing': [
+				'error',
+				{
+					html: {
+						void: 'always',
+						normal: 'always',
+						component: 'always'
+					}
+				}
+			],
+			'vue/multi-word-component-names': 'off', // Disable multi-word name restriction
+			'vue/attribute-hyphenation': ['error', 'always']
 		}
 	},
 	{
 		files: ['*.json'],
+		plugins: {
+			prettier: pluginPrettier
+		},
 		rules: {
-			quotes: ['error', 'double']
+			quotes: ['error', 'double'], // Enforce double quotes in JSON
+			'prettier/prettier': 'error'
 		}
 	},
 	{
-		files: ['**/*.{ts,mts,tsx}'],
+		files: ['**/*.{ts,mts,tsx,js}'],
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {
@@ -56,16 +73,15 @@ export default [
 			}
 		},
 		plugins: {
-			vue: pluginVue,
 			prettier: pluginPrettier,
 			import: pluginImport
 		},
 		rules: {
-			indent: ['error', 'tab', { SwitchCase: 1 }],
-			quotes: ['warn', 'single', { avoidEscape: true }],
-			semi: ['error', 'always'],
-			'comma-dangle': 'off',
-			'prettier/prettier': 'error',
+			indent: ['error', 'tab', { SwitchCase: 1 }], // Use tabs for JS/TS
+			quotes: ['warn', 'single', { avoidEscape: true }], // Prefer single quotes
+			semi: ['error', 'always'], // Enforce semicolons
+			'comma-dangle': 'off', // Disable trailing commas
+			'prettier/prettier': 'error', // Enforce Prettier rules
 			'import/order': [
 				'error',
 				{
@@ -74,41 +90,8 @@ export default [
 					alphabetize: { order: 'asc', caseInsensitive: true }
 				}
 			],
-			'vue/multi-word-component-names': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-unused-vars': 'off'
-		}
-	},
-	{
-		rules: {
-			'vue/html-indent': ['error', 'tab'],
-			'vue/max-attributes-per-line': ['error', { singleline: 1, multiline: 3 }],
-			'vue/singleline-html-element-content-newline': 'off',
-			// 'vue/no-v-html': 'error',
-			'vue/require-default-prop': 'error',
-			'vue/require-prop-types': 'error',
-			'vue/html-self-closing': [
-				'error',
-				{
-					html: {
-						void: 'always',
-						normal: 'never',
-						component: 'always'
-					}
-				}
-			]
-		}
-	},
-	{
-		rules: {
-			'vue/component-name-in-template-casing': [
-				'error',
-				'kebab-case',
-				{
-					registeredComponentsOnly: false,
-					ignores: []
-				}
-			]
 		}
 	}
 ];
