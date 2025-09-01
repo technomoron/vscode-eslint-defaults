@@ -7,7 +7,7 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -L https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.14/installer.tgz | tar -vxz && node configure-eslint.cjs && rm installer.tgz configure-eslint.cjs
+curl -L https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.14/installer.tgz | tar -vxz --no-same-owner && node configure-eslint.cjs && rm configure-eslint.cjs
 ```
 
 Windows with Power Shell
