@@ -1,0 +1,10 @@
+CHANGES
+=======
+
+- Release 1.0.16.
+- Bump ESLint ecosystem to latest compatible releases (ESLint 9.36, Prettier 3.6, TypeScript ESLint 8.44, Vue plugins, importer resolver).
+- Add jsonc-eslint-parser and relax TypeScript lint rules so JSON/package.json files lint cleanly.
+- Extend lint coverage for .cjs/.mjs files, align lint/format scripts with the new extensions, and reformat configure-eslint installer script with prettier-compatible tabs.
+- Regenerate installer dependency list to match published versions while leaving bundle creation to CI.
+- Verified installer flow in a sample project (`npm run lintfix`, `npm run lint`).
+- Re-enabled @typescript-eslint/no-explicit-any and @typescript-eslint/no-unused-vars as warnings.
