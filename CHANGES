@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+- Release 1.0.19.
+- Fix `installer/eslint.config.mjs` import order so the config linting rules pass without manual overrides.
+- Release 1.0.18.
+- Prevent Vue-specific lint dependencies from triggering Vue mode detection (so TS-only projects drop the Vue stack again).
 - Release 1.0.17.
 - Installer now detects Vue/Nuxt dependencies and installs/removes the framework-specific ESLint stack automatically, pruning any extra eslint/prettier packages it finds.
 - ESLint config dynamically loads Vue presets only when present, scopes them to `.vue` files, and drops the eslint-plugin-prettier bridge in favor of native Prettier formatting plus VSCode defaults.
