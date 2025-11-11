@@ -24,6 +24,7 @@ const banished_dependencies = ['eslint', 'tslint'];
 const lint_sections = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
 const lint_tokens = ['eslint', 'prettier'];
 const purged_dependency_names = new Set();
+const catalogued_lint_dependencies = new Set(strip_versions([...base_dependencies, ...vue_dependencies]));
 let dependencies_to_install = [...base_dependencies];
 let allowed_lint_dependencies = new Set(strip_versions(dependencies_to_install));
 let vue_stack_enabled = false;
@@ -167,7 +168,12 @@ function detect_vue_stack(spellbook) {
 		if (!shelf) {
 			return;
 		}
-		Object.keys(shelf).forEach((dep) => projectDeps.add(dep));
+		Object.keys(shelf).forEach((dep) => {
+			if (catalogued_lint_dependencies.has(dep)) {
+				return;
+			}
+			projectDeps.add(dep);
+		});
 	});
 
 	const vueMarkers = ['vue', 'nuxt', 'nuxt3'];
