@@ -4,24 +4,33 @@ const path = require('path');
 
 const haunted_artifacts = ['.eslintignore', '.eslintrc.cjs', 'eslint.config.js'];
 
-const cursed_dependencies = [
+const base_dependencies = [
 	'eslint@^9.36.0',
 	'prettier@^3.6.2',
 	'eslint-config-prettier@^10.1.8',
-	'eslint-plugin-prettier@^5.5.4',
-	'eslint-plugin-vue@^10.5.0',
-	'vue-eslint-parser@^10.2.0',
 	'jsonc-eslint-parser@^2.4.1',
 	'@typescript-eslint/eslint-plugin@^8.44.1',
 	'@typescript-eslint/parser@^8.44.1',
-	'@vue/eslint-config-typescript@^14.6.0',
-	'@vue/eslint-config-prettier@^10.2.0',
-	'eslint-plugin-import@^2.32.0',
-	'eslint-plugin-nuxt@^4.0.0',
-	'eslint-import-resolver-alias@^1.1.2'
+	'eslint-plugin-import@^2.32.0'
+];
+
+const vue_dependencies = [
+	'eslint-plugin-vue@^10.5.0',
+	'vue-eslint-parser@^10.2.0',
+	'@vue/eslint-config-typescript@^14.6.0'
 ];
 
 const banished_dependencies = ['eslint', 'tslint'];
+const lint_sections = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
+const lint_tokens = ['eslint', 'prettier'];
+const purged_dependency_names = new Set();
+let dependencies_to_install = [...base_dependencies];
+let allowed_lint_dependencies = new Set(strip_versions(dependencies_to_install));
+let vue_stack_enabled = false;
+
+function should_purge_dependency(name) {
+	return lint_tokens.some((token) => name.includes(token)) && !allowed_lint_dependencies.has(name);
+}
 
 const incantation_scripts = {
 	lint: 'eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue ./',
@@ -67,6 +76,8 @@ function inscribe_package_scroll() {
 	const spellbook = JSON.parse(fs.readFileSync(scroll_path, 'utf8'));
 
 	spellbook.scripts ||= {};
+	configure_dependency_plan(spellbook);
+	purge_unlisted_dependencies(spellbook);
 
 	for (const [rune, incantation] of Object.entries(incantation_scripts)) {
 		if (spellbook.scripts[rune]) {
@@ -92,15 +103,93 @@ function brew_dependencies() {
 
 	if (has_pnpm_charm) {
 		console.log('🟣 Casting spells with pnpm...');
-		summon(`pnpm remove ${banished_dependencies.join(' ')}`, true);
-		summon(`pnpm add -D ${cursed_dependencies.join(' ')}`);
+		const removalTargets = Array.from(new Set([...banished_dependencies, ...purged_dependency_names]));
+		if (removalTargets.length) {
+			summon(`pnpm remove ${removalTargets.join(' ')}`, true);
+		}
+		summon(`pnpm add -D ${dependencies_to_install.join(' ')}`);
 	} else {
 		console.log('🔵 Brewing with npm...');
-		summon(`npm uninstall ${banished_dependencies.join(' ')}`);
-		summon(`npm install -D ${cursed_dependencies.join(' ')}`, true);
+		const removalTargets = Array.from(new Set([...banished_dependencies, ...purged_dependency_names]));
+		if (removalTargets.length) {
+			summon(`npm uninstall ${removalTargets.join(' ')}`);
+		}
+		summon(`npm install -D ${dependencies_to_install.join(' ')}`, true);
 	}
 
 	console.log('🧪 Ritual complete. Dev dependencies enchanted.');
+}
+
+function purge_unlisted_dependencies(spellbook) {
+	const removed = [];
+
+	lint_sections.forEach((section) => {
+		const shelf = spellbook[section];
+		if (!shelf) {
+			return;
+		}
+
+		Object.keys(shelf).forEach((depName) => {
+			if (should_purge_dependency(depName)) {
+				removed.push(depName);
+				delete shelf[depName];
+			}
+		});
+
+		if (shelf && Object.keys(shelf).length === 0) {
+			delete spellbook[section];
+		}
+	});
+
+	if (removed.length) {
+		removed.forEach((name) => purged_dependency_names.add(name));
+		console.log(`🧯 Purged stray lint deps: ${removed.join(', ')}`);
+	}
+}
+
+function configure_dependency_plan(spellbook) {
+	vue_stack_enabled = detect_vue_stack(spellbook);
+	dependencies_to_install = vue_stack_enabled ? [...base_dependencies, ...vue_dependencies] : [...base_dependencies];
+	allowed_lint_dependencies = new Set(strip_versions(dependencies_to_install));
+
+	if (vue_stack_enabled) {
+		console.log('🌿 Vue/Nuxt dependencies detected — enabling Vue lint stack.');
+	} else {
+		console.log('🛡️  No Vue/Nuxt dependencies detected — using TypeScript-only lint stack.');
+	}
+}
+
+function detect_vue_stack(spellbook) {
+	const projectDeps = new Set();
+
+	lint_sections.forEach((section) => {
+		const shelf = spellbook[section];
+		if (!shelf) {
+			return;
+		}
+		Object.keys(shelf).forEach((dep) => projectDeps.add(dep));
+	});
+
+	const vueMarkers = ['vue', 'nuxt', 'nuxt3'];
+	const vuePrefixes = ['@vue/', '@nuxt/'];
+	const vueContains = ['vue-router', '@vitejs/plugin-vue', 'eslint-plugin-vue'];
+
+	return Array.from(projectDeps).some((dep) => {
+		if (vueMarkers.includes(dep)) {
+			return true;
+		}
+		if (vuePrefixes.some((prefix) => dep.startsWith(prefix))) {
+			return true;
+		}
+		return vueContains.some((token) => dep.includes(token));
+	});
+}
+
+function strip_versions(specs) {
+	return specs.map((spec) => {
+		const atIndex = spec.lastIndexOf('@');
+		return atIndex > 0 ? spec.slice(0, atIndex) : spec;
+	});
 }
 
 console.log('🔥 Let the ritual begin...');

@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+- Release 1.0.17.
+- Installer now detects Vue/Nuxt dependencies and installs/removes the framework-specific ESLint stack automatically, pruning any extra eslint/prettier packages it finds.
+- ESLint config dynamically loads Vue presets only when present, scopes them to `.vue` files, and drops the eslint-plugin-prettier bridge in favor of native Prettier formatting plus VSCode defaults.
+- Added workspace `.vscode` settings/extensions so ESLint + Prettier work out-of-the-box after installing the recommended extensions.
 - Release 1.0.16.
 - Bump ESLint ecosystem to latest compatible releases (ESLint 9.36, Prettier 3.6, TypeScript ESLint 8.44, Vue plugins, importer resolver).
 - Add jsonc-eslint-parser and relax TypeScript lint rules so JSON/package.json files lint cleanly.
