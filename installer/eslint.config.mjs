@@ -1,8 +1,8 @@
-import pluginImport from 'eslint-plugin-import';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-import jsoncParser from 'jsonc-eslint-parser';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
+import pluginImport from 'eslint-plugin-import';
+import jsoncParser from 'jsonc-eslint-parser';
 const TS_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,vue}'];
 const VUE_FILE_GLOBS = ['**/*.vue'];
 
