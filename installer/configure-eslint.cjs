@@ -8,10 +8,13 @@ const base_dependencies = [
 	'eslint@^9.36.0',
 	'prettier@^3.6.2',
 	'eslint-config-prettier@^10.1.8',
+	'eslint-plugin-markdown@^5.1.0',
 	'jsonc-eslint-parser@^2.4.1',
 	'@typescript-eslint/eslint-plugin@^8.44.1',
 	'@typescript-eslint/parser@^8.44.1',
-	'eslint-plugin-import@^2.32.0'
+	'eslint-plugin-import@^2.32.0',
+	'stylelint@^16.26.0',
+	'stylelint-config-standard-scss@^16.0.0'
 ];
 
 const vue_dependencies = [
@@ -22,7 +25,7 @@ const vue_dependencies = [
 
 const banished_dependencies = ['eslint', 'tslint'];
 const lint_sections = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
-const lint_tokens = ['eslint', 'prettier'];
+const lint_tokens = ['eslint', 'prettier', 'stylelint'];
 const purged_dependency_names = new Set();
 const catalogued_lint_dependencies = new Set(strip_versions([...base_dependencies, ...vue_dependencies]));
 let dependencies_to_install = [...base_dependencies];
@@ -34,8 +37,8 @@ function should_purge_dependency(name) {
 }
 
 const incantation_scripts = {
-	lint: 'eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue ./',
-	lintfix: 'eslint --fix --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue ./',
+	lint: 'eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint "**/*.{css,scss}"',
+	lintfix: 'eslint --fix --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --fix "**/*.{css,scss}"',
 	pretty: 'prettier --write "**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}"',
 	format: 'npm run lintfix && npm run pretty',
 	cleanbuild: 'rm -rf ./dist/ && npm run lintfix && npm run format && npm run build'

@@ -7,13 +7,13 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -L https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.19/installer.tgz | tar -vxz --no-same-owner && node configure-eslint.cjs && rm configure-eslint.cjs
+curl -L https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.20/installer.tgz | tar -vxz --no-same-owner && node configure-eslint.cjs && rm configure-eslint.cjs
 ```
 
 Windows with Power Shell
 
 ```bash
-Invoke-WebRequest -Uri https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.19/installer.tgz -OutFile installer.tgz; tar -xvzf installer.tgz; node configure-eslint.cjs; Remove-Item -Force installer.tgz, configure-eslint.cjs
+Invoke-WebRequest -Uri https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.20/installer.tgz -OutFile installer.tgz; tar -xvzf installer.tgz; node configure-eslint.cjs; Remove-Item -Force installer.tgz, configure-eslint.cjs
 
 ```
 
@@ -27,9 +27,9 @@ Add these to your `package.json`:
 
 ```json
 "scripts": {
-  "lint": "eslint --ext .js,.ts,.vue ./",
-  "lintfix": "eslint --fix --ext .js,.ts,.vue ./",
-  "format": "prettier --write \"**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}\""
+  "lint": "eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint \"**/*.{css,scss}\"",
+  "lintfix": "eslint --fix --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --fix \"**/*.{css,scss}\"",
+  "format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\""
 }
 ```
 

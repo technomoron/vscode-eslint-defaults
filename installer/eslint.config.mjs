@@ -3,11 +3,14 @@ import tsParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import pluginImport from 'eslint-plugin-import';
 import jsoncParser from 'jsonc-eslint-parser';
+import markdownPlugin from 'eslint-plugin-markdown';
 const TS_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,vue}'];
+const TS_PLUGIN_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,js,mjs,cjs,vue}', '**/*.md/*.{ts,tsx,mts,cts,js,mjs,cjs,vue}'];
 const VUE_FILE_GLOBS = ['**/*.vue'];
+const MARKDOWN_FILE_GLOBS = ['**/*.md'];
 
 const { hasVueSupport, pluginVue, vueTypeScriptConfigs } = await loadVueSupport();
-const scopedVueTypeScriptConfigs = hasVueSupport ? scopeVueConfigs(vueTypeScriptConfigs) : [];
+const scopedVueTypeScriptConfigs = hasVueSupport ? scopeVueConfigs(vueTypeScriptConfigs).map(stripTypeScriptPlugin) : [];
 const vueSpecificBlocks = hasVueSupport
 	? [
 			...scopedVueTypeScriptConfigs,
@@ -54,7 +57,20 @@ export default [
 			'public'
 		]
 	},
+	{
+		files: TS_PLUGIN_FILE_GLOBS,
+		plugins: {
+			'@typescript-eslint': tsPlugin
+		}
+	},
 	...vueSpecificBlocks,
+	{
+		files: MARKDOWN_FILE_GLOBS,
+		plugins: {
+			markdown: markdownPlugin
+		},
+		processor: 'markdown/markdown'
+	},
 	{
 		files: ['**/*.json'],
 		languageOptions: {
@@ -65,7 +81,7 @@ export default [
 		}
 	},
 	{
-		files: ['**/*.{ts,mts,tsx,js,mjs,cjs}'],
+		files: ['**/*.{ts,mts,tsx,js,mjs,cjs}', '**/*.md/*.{ts,mts,tsx,js,mjs,cjs}'],
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {
@@ -81,7 +97,6 @@ export default [
 			}
 		},
 		plugins: {
-			'@typescript-eslint': tsPlugin,
 			import: pluginImport
 		},
 		rules: {
@@ -150,6 +165,23 @@ function scopeVueConfigs(configs) {
 			files: TS_FILE_GLOBS
 		};
 	});
+}
+
+function stripTypeScriptPlugin(config) {
+	const { plugins = {}, ...rest } = config;
+
+	if (!plugins['@typescript-eslint']) {
+		return config;
+	}
+
+	const otherPlugins = { ...plugins };
+	delete otherPlugins['@typescript-eslint'];
+	const hasOtherPlugins = Object.keys(otherPlugins).length > 0;
+
+	return {
+		...rest,
+		...(hasOtherPlugins ? { plugins: otherPlugins } : {})
+	};
 }
 
 function unwrapDefault(module) {

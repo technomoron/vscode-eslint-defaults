@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+- Release 1.0.20.
+- Add markdown linting support and include CSS/SCSS via Stylelint in the installer scripts/config (keeping dist/.output/node_modules ignored).
 - Release 1.0.19.
 - Fix `installer/eslint.config.mjs` import order so the config linting rules pass without manual overrides.
 - Release 1.0.18.

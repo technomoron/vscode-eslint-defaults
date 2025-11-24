@@ -1,6 +1,6 @@
 {
 	"name": "vscode-eslint-defaults",
-	"version": "1.0.19",
+	"version": "1.0.20",
 	"description": "Default editor config and eslint config for js/ts/vue",
 	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
 	"bugs": {
@@ -19,8 +19,8 @@
 	"main": "installer.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue ./",
-		"lintfix": "eslint --fix --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue ./",
+		"lint": "eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint \"**/*.{css,scss}\"",
+		"lintfix": "eslint --fix --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --fix \"**/*.{css,scss}\"",
 		"format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\""
 	},
 	"devDependencies": {
@@ -29,10 +29,13 @@
 		"@vue/eslint-config-typescript": "^14.6.0",
 		"eslint": "^9.36.0",
 		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-markdown": "^5.1.0",
 		"eslint-plugin-import": "^2.32.0",
 		"eslint-plugin-vue": "^10.5.0",
 		"jsonc-eslint-parser": "^2.4.1",
 		"prettier": "^3.6.2",
+		"stylelint": "^16.26.0",
+		"stylelint-config-standard-scss": "^16.0.0",
 		"vue-eslint-parser": "^10.2.0"
 	}
 }
