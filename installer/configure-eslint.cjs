@@ -37,8 +37,8 @@ function should_purge_dependency(name) {
 }
 
 const incantation_scripts = {
-	lint: 'eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint "**/*.{css,scss}"',
-	lintfix: 'eslint --fix --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --fix "**/*.{css,scss}"',
+	lint: 'eslint --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --allow-empty-input "**/*.{css,scss}"',
+	lintfix: 'eslint --fix --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --allow-empty-input --fix "**/*.{css,scss}"',
 	pretty: 'prettier --write "**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}"',
 	format: 'npm run lintfix && npm run pretty',
 	cleanbuild: 'rm -rf ./dist/ && npm run lintfix && npm run format && npm run build'

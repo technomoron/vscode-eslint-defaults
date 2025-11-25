@@ -1,6 +1,6 @@
 {
 	"name": "vscode-eslint-defaults",
-	"version": "1.0.20",
+	"version": "1.0.21",
 	"description": "Default editor config and eslint config for js/ts/vue",
 	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
 	"bugs": {
@@ -19,8 +19,8 @@
 	"main": "installer.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint \"**/*.{css,scss}\"",
-		"lintfix": "eslint --fix --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --fix \"**/*.{css,scss}\"",
+		"lint": "eslint --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --allow-empty-input \"**/*.{css,scss}\"",
+		"lintfix": "eslint --fix --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --allow-empty-input --fix \"**/*.{css,scss}\"",
 		"format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\""
 	},
 	"devDependencies": {
