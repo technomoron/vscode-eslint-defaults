@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+- Release 1.0.22.
+- Add Prettier prose wrapping defaults (80 columns) to the installer templates for Markdown.
 - Release 1.0.21.
 - Make the installed lint scripts tolerate projects without CSS/SCSS/Markdown by adding `--allow-empty-input` and `--no-error-on-unmatched-pattern`.
 - Release 1.0.20.
