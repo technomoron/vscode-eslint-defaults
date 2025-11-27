@@ -48,12 +48,14 @@ export default [
 			'dist',
 			'.output',
 			'.nuxt',
+			'.netlify',
+			'node_modules/.netlify',
+			'4000/.nuxt',
 			'coverage',
 			'**/*.d.ts',
 			'configure-eslint.cjs',
 			'configure-eslint.js',
 			'*.config.js',
-			'*.config.ts',
 			'public'
 		]
 	},
