@@ -20,19 +20,6 @@ Invoke-WebRequest -Uri https://github.com/technomoron/vscode-eslint-defaults/rel
 The configure script will remove old eslint packages and add new ones,
 update eslint to v9.x and add some script targets to package.json
 
-=======
-## NPM Scripts
-
-Add these to your `package.json`:
-
-```json
-"scripts": {
-  "lint": "eslint --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --allow-empty-input \"**/*.{css,scss}\"",
-  "lintfix": "eslint --fix --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.md,.json ./ && stylelint --allow-empty-input --fix \"**/*.{css,scss}\"",
-  "format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\""
-}
-```
-
 Markdown files are wrapped to 80 columns via the bundled `.prettierrc.json` (`proseWrap: "always"`).
 
 ### Command Usage
