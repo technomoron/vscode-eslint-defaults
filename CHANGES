@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+- Release 1.0.30.
+- Prefer `.prettierrc`: migrate existing `.prettierrc.json` into `.prettierrc`, remove duplicates, and add defaults when none exist.
 - Release 1.0.29.
 - If only .prettierrc.json is extracted (no existing .prettierrc), keep it and write defaults; if both exist, keep .prettierrc and drop the duplicate JSON.
 - Release 1.0.28.

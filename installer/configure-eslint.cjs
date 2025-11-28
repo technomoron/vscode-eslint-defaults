@@ -275,7 +275,7 @@ function shouldPurgeDependency(name) {
 
 console.log('Starting ESLint/Prettier setup...');
 banishHauntedFiles();
-removePrettierDuplicates();
+ensurePrettierConfig();
 removeStylelintConfigIfDisabled();
 inscribePackageScroll();
 brewDependencies();
@@ -292,24 +292,29 @@ function removeStylelintConfigIfDisabled() {
 	}
 }
 
-function removePrettierDuplicates() {
+function ensurePrettierConfig() {
 	const prettierRc = path.join(process.cwd(), '.prettierrc');
 	const prettierJson = path.join(process.cwd(), '.prettierrc.json');
+	const defaults = { printWidth: 80, proseWrap: 'always' };
 
 	const hasRc = fs.existsSync(prettierRc);
 	const hasJson = fs.existsSync(prettierJson);
 
 	if (hasRc && hasJson) {
-		// Keep the user-provided .prettierrc and drop the duplicate JSON.
 		fs.unlinkSync(prettierJson);
 		console.log('Found .prettierrc and .prettierrc.json; keeping .prettierrc, removed .prettierrc.json.');
 		return;
 	}
 
-	if (!hasRc && !hasJson) {
-		const defaults = { printWidth: 80, proseWrap: 'always' };
-		fs.writeFileSync(prettierJson, JSON.stringify(defaults, null, 2) + '\n');
-		console.log('Added default .prettierrc.json (no existing Prettier config found).');
+	if (!hasRc && hasJson) {
+		fs.copyFileSync(prettierJson, prettierRc);
+		fs.unlinkSync(prettierJson);
+		console.log('Migrated .prettierrc.json to .prettierrc.');
 		return;
+	}
+
+	if (!hasRc && !hasJson) {
+		fs.writeFileSync(prettierRc, JSON.stringify(defaults, null, 2) + '\n');
+		console.log('Added default .prettierrc (no existing Prettier config found).');
 	}
 }
