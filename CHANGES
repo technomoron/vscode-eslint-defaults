@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+- Release 1.0.27.
+- When both `.prettierrc` and `.prettierrc.json` exist after install, prefer `.prettierrc.json` and remove the duplicate `.prettierrc`.
 - Release 1.0.26.
 - When CSS is disabled, installers also delete any extracted `stylelint.config.cjs` to keep configs clean.
 - Release 1.0.25.

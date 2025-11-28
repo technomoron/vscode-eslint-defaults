@@ -275,6 +275,7 @@ function shouldPurgeDependency(name) {
 
 console.log('Starting ESLint/Prettier setup...');
 banishHauntedFiles();
+removePrettierDuplicates();
 removeStylelintConfigIfDisabled();
 inscribePackageScroll();
 brewDependencies();
@@ -288,5 +289,15 @@ function removeStylelintConfigIfDisabled() {
 	if (fs.existsSync(stylelintPath)) {
 		fs.unlinkSync(stylelintPath);
 		console.log('Removed stylelint.config.cjs because CSS linting is disabled.');
+	}
+}
+
+function removePrettierDuplicates() {
+	const prettierRc = path.join(process.cwd(), '.prettierrc');
+	const prettierJson = path.join(process.cwd(), '.prettierrc.json');
+
+	if (fs.existsSync(prettierRc) && fs.existsSync(prettierJson)) {
+		fs.unlinkSync(prettierRc);
+		console.log('Removed .prettierrc to avoid duplicate configs (using .prettierrc.json).');
 	}
 }
