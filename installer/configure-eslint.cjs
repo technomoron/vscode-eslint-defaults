@@ -275,5 +275,18 @@ function shouldPurgeDependency(name) {
 
 console.log('Starting ESLint/Prettier setup...');
 banishHauntedFiles();
+removeStylelintConfigIfDisabled();
 inscribePackageScroll();
 brewDependencies();
+
+function removeStylelintConfigIfDisabled() {
+	if (featureToggles.cssEnabled) {
+		return;
+	}
+
+	const stylelintPath = path.join(process.cwd(), 'stylelint.config.cjs');
+	if (fs.existsSync(stylelintPath)) {
+		fs.unlinkSync(stylelintPath);
+		console.log('Removed stylelint.config.cjs because CSS linting is disabled.');
+	}
+}

@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+- Release 1.0.25.
+- When CSS linting is disabled via flags, remove `stylelint.config.cjs` and prune stylelint deps/scripts.
 - Release 1.0.24.
 - Switch Markdown handling to formatting only (no ESLint code-block linting) and add optional install flags via install.sh/install.ps1.
 - Release 1.0.23.
