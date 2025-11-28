@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION_DEFAULT="1.0.25"
+VERSION_DEFAULT="1.0.26"
 VERSION="${VSCODE_ESLINT_DEFAULTS_VERSION:-$VERSION_DEFAULT}"
 CSS_ENABLED=1
 MARKDOWN_ENABLED=1
@@ -62,6 +62,11 @@ tar -xzf "$ARCHIVE_PATH" -C "$PWD"
 
 echo "Running configure-eslint.cjs..."
 INSTALL_CSS="$CSS_ENABLED" INSTALL_MARKDOWN="$MARKDOWN_ENABLED" node configure-eslint.cjs
+
+if [[ "$CSS_ENABLED" -eq 0 ]] && [[ -f "stylelint.config.cjs" ]]; then
+	echo "CSS disabled; removing stylelint.config.cjs..."
+	rm -f stylelint.config.cjs
+fi
 
 echo "Cleaning up..."
 rm -f configure-eslint.cjs

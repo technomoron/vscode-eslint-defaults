@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+- Release 1.0.26.
+- When CSS is disabled, installers also delete any extracted `stylelint.config.cjs` to keep configs clean.
 - Release 1.0.25.
 - When CSS linting is disabled via flags, remove `stylelint.config.cjs` and prune stylelint deps/scripts.
 - Release 1.0.24.

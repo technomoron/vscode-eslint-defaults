@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "1.0.25",
+    [string]$Version = "1.0.26",
     [switch]$Css,
     [switch]$NoCss,
     [switch]$Markdown,
@@ -53,6 +53,14 @@ function Install-VSCodeEslintDefaults {
     $env:INSTALL_CSS = if ($cssEnabled) { "1" } else { "0" }
     $env:INSTALL_MARKDOWN = if ($markdownEnabled) { "1" } else { "0" }
     node .\configure-eslint.cjs
+
+    if (-not $cssEnabled) {
+        $stylelintPath = Join-Path (Get-Location) "stylelint.config.cjs"
+        if (Test-Path $stylelintPath) {
+            Write-Host "CSS disabled; removing stylelint.config.cjs..."
+            Remove-Item -Force $stylelintPath
+        }
+    }
 
     Write-Host "Cleaning up..."
     Remove-Item -Force .\configure-eslint.cjs -ErrorAction SilentlyContinue
