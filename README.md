@@ -7,18 +7,21 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -L https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.23/installer.tgz | tar -vxz --no-same-owner && node configure-eslint.cjs && rm configure-eslint.cjs
+curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- [--no-css] [--no-markdown] [--version 1.0.23]
 ```
 
-Windows with Power Shell
+Windows with Power Shell:
 
-```bash
-Invoke-WebRequest -Uri https://github.com/technomoron/vscode-eslint-defaults/releases/download/v1.0.23/installer.tgz -OutFile installer.tgz; tar -xvzf installer.tgz; node configure-eslint.cjs; Remove-Item -Force installer.tgz, configure-eslint.cjs
-
+```powershell
+iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.23 [-NoCss] [-NoMarkdown]
 ```
 
-The configure script will remove old eslint packages and add new ones,
-update eslint to v9.x and add some script targets to package.json
+Flags:
+- CSS/SCSS linting is on by default; disable with `--no-css` or `-NoCss`.
+- Markdown linting is on by default; disable with `--no-markdown` or `-NoMarkdown`.
+- Override the release with `--version <v>` / `-Version <v>` (defaults to 1.0.23 or `$VSCODE_ESLINT_DEFAULTS_VERSION`).
+
+The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
 
 Markdown files are wrapped to 80 columns via the bundled `.prettierrc.json` (`proseWrap: "always"`).
 
@@ -44,5 +47,3 @@ Markdown files are wrapped to 80 columns via the bundled `.prettierrc.json` (`pr
 
 - TODO Highlights (Highlights TODO: xxx comments in source)
 - remark (preview MD files inside VSCode)
-
-## Install files using install script
