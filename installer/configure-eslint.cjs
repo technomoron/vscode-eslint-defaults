@@ -17,8 +17,6 @@ const coreDependencies = [
 ];
 
 const cssDependencies = ['stylelint@^16.26.0', 'stylelint-config-standard-scss@^16.0.0'];
-const markdownDependencies = ['eslint-plugin-markdown@^5.1.0'];
-
 const vueDependencies = [
 	'eslint-plugin-vue@^10.5.0',
 	'vue-eslint-parser@^10.2.0',
@@ -30,7 +28,7 @@ const lintSections = ['dependencies', 'devDependencies', 'optionalDependencies',
 const lintTokens = ['eslint', 'prettier', 'stylelint'];
 const purgedDependencyNames = new Set();
 const cataloguedLintDependencies = new Set(
-	stripVersions([...coreDependencies, ...cssDependencies, ...markdownDependencies, ...vueDependencies])
+	stripVersions([...coreDependencies, ...cssDependencies, ...vueDependencies])
 );
 let dependenciesToInstall = [];
 let allowedLintDependencies = new Set();
@@ -148,9 +146,6 @@ function configureDependencyPlan(spellbook) {
 	vueStackEnabled = detectVueStack(spellbook);
 	dependenciesToInstall = [...coreDependencies];
 
-	if (featureToggles.markdownEnabled) {
-		dependenciesToInstall.push(...markdownDependencies);
-	}
 	if (featureToggles.cssEnabled) {
 		dependenciesToInstall.push(...cssDependencies);
 	}
@@ -170,9 +165,11 @@ function configureDependencyPlan(spellbook) {
 		console.log('CSS/SCSS linting disabled by flag.');
 	}
 
-	if (!featureToggles.markdownEnabled) {
-		console.log('Markdown linting disabled by flag.');
-	}
+	console.log(
+		featureToggles.markdownEnabled
+			? 'Markdown formatting enabled (no ESLint code-block linting).'
+			: 'Markdown formatting disabled by flag.'
+	);
 }
 
 function detectVueStack(spellbook) {
@@ -215,9 +212,6 @@ function stripVersions(specs) {
 
 function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
 	const eslintExtensions = ['.js', '.cjs', '.mjs', '.ts', '.mts', '.tsx', '.vue', '.json'];
-	if (markdownEnabled) {
-		eslintExtensions.push('.md');
-	}
 
 	const eslintCmd = `eslint --no-error-on-unmatched-pattern --ext ${eslintExtensions.join(',')} ./`;
 	const eslintFixCmd = `eslint --fix --no-error-on-unmatched-pattern --ext ${eslintExtensions.join(',')} ./`;

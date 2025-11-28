@@ -4,13 +4,11 @@ import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import pluginImport from 'eslint-plugin-import';
 import jsoncParser from 'jsonc-eslint-parser';
 const TS_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,vue}'];
-const TS_PLUGIN_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,js,mjs,cjs,vue}', '**/*.md/*.{ts,tsx,mts,cts,js,mjs,cjs,vue}'];
+const TS_PLUGIN_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,js,mjs,cjs,vue}'];
 const VUE_FILE_GLOBS = ['**/*.vue'];
-const MARKDOWN_FILE_GLOBS = ['**/*.md'];
 
 const { hasVueSupport, pluginVue, vueTypeScriptConfigs } = await loadVueSupport();
 const scopedVueTypeScriptConfigs = hasVueSupport ? scopeVueConfigs(vueTypeScriptConfigs).map(stripTypeScriptPlugin) : [];
-const markdownPlugin = await loadMarkdownSupport();
 const vueSpecificBlocks = hasVueSupport
 	? [
 			...scopedVueTypeScriptConfigs,
@@ -40,17 +38,6 @@ const vueSpecificBlocks = hasVueSupport
 			}
 	  ]
 	: [];
-const markdownBlocks = markdownPlugin
-	? [
-			{
-				files: MARKDOWN_FILE_GLOBS,
-				plugins: {
-					markdown: markdownPlugin
-				},
-				processor: 'markdown/markdown'
-			}
-	  ]
-	: [];
 
 export default [
 	{
@@ -77,7 +64,6 @@ export default [
 		}
 	},
 	...vueSpecificBlocks,
-	...markdownBlocks,
 	{
 		files: ['**/*.json'],
 		languageOptions: {
@@ -88,7 +74,7 @@ export default [
 		}
 	},
 	{
-		files: ['**/*.{ts,mts,tsx,js,mjs,cjs}', '**/*.md/*.{ts,mts,tsx,js,mjs,cjs}'],
+		files: ['**/*.{ts,mts,tsx,js,mjs,cjs}'],
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {
@@ -124,19 +110,6 @@ export default [
 		...eslintConfigPrettier
 	}
 ];
-
-async function loadMarkdownSupport() {
-	try {
-		const markdownModule = await import('eslint-plugin-markdown');
-		return unwrapDefault(markdownModule);
-	} catch (error) {
-		if (isModuleNotFoundError(error)) {
-			return null;
-		}
-
-		throw error;
-	}
-}
 
 async function loadVueSupport() {
 	try {
