@@ -296,9 +296,20 @@ function removePrettierDuplicates() {
 	const prettierRc = path.join(process.cwd(), '.prettierrc');
 	const prettierJson = path.join(process.cwd(), '.prettierrc.json');
 
-	if (fs.existsSync(prettierRc) && fs.existsSync(prettierJson)) {
-		// Keep the existing .prettierrc (likely user-owned) and drop the extracted JSON.
+	const hasRc = fs.existsSync(prettierRc);
+	const hasJson = fs.existsSync(prettierJson);
+
+	if (hasRc && hasJson) {
+		// Keep the user-provided .prettierrc and drop the duplicate JSON.
 		fs.unlinkSync(prettierJson);
-		console.log('Removed installer .prettierrc.json to keep existing .prettierrc.');
+		console.log('Found .prettierrc and .prettierrc.json; keeping .prettierrc, removed .prettierrc.json.');
+		return;
+	}
+
+	if (!hasRc && !hasJson) {
+		const defaults = { printWidth: 80, proseWrap: 'always' };
+		fs.writeFileSync(prettierJson, JSON.stringify(defaults, null, 2) + '\n');
+		console.log('Added default .prettierrc.json (no existing Prettier config found).');
+		return;
 	}
 }

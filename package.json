@@ -1,6 +1,6 @@
 {
 	"name": "vscode-eslint-defaults",
-	"version": "1.0.28",
+	"version": "1.0.29",
 	"description": "Default editor config and eslint config for js/ts/vue",
 	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
 	"bugs": {
