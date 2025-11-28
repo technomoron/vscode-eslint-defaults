@@ -297,7 +297,8 @@ function removePrettierDuplicates() {
 	const prettierJson = path.join(process.cwd(), '.prettierrc.json');
 
 	if (fs.existsSync(prettierRc) && fs.existsSync(prettierJson)) {
-		fs.unlinkSync(prettierRc);
-		console.log('Removed .prettierrc to avoid duplicate configs (using .prettierrc.json).');
+		// Keep the existing .prettierrc (likely user-owned) and drop the extracted JSON.
+		fs.unlinkSync(prettierJson);
+		console.log('Removed installer .prettierrc.json to keep existing .prettierrc.');
 	}
 }
