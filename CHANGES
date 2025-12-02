@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+- Release 1.0.31.
+- Add Stylelint VSCode settings and extension recommendation when CSS/SCSS linting is enabled (remove them when disabled).
 - Release 1.0.30.
 - Prefer `.prettierrc`: migrate existing `.prettierrc.json` into `.prettierrc`, remove duplicates, and add defaults when none exist.
 - Release 1.0.29.

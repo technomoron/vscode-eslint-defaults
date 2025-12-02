@@ -276,6 +276,8 @@ function shouldPurgeDependency(name) {
 console.log('Starting ESLint/Prettier setup...');
 banishHauntedFiles();
 ensurePrettierConfig();
+configureVsCodeSettings(featureToggles.cssEnabled);
+configureVsCodeExtensions(featureToggles.cssEnabled);
 removeStylelintConfigIfDisabled();
 inscribePackageScroll();
 brewDependencies();
@@ -316,5 +318,105 @@ function ensurePrettierConfig() {
 	if (!hasRc && !hasJson) {
 		fs.writeFileSync(prettierRc, JSON.stringify(defaults, null, 2) + '\n');
 		console.log('Added default .prettierrc (no existing Prettier config found).');
+	}
+}
+
+function configureVsCodeSettings(cssEnabled) {
+	const settingsPath = path.join(process.cwd(), '.vscode', 'settings.json');
+
+	if (!fs.existsSync(settingsPath)) {
+		console.log('.vscode/settings.json not found; skipping VSCode settings update.');
+		return;
+	}
+
+	let settings;
+	try {
+		settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+	} catch (error) {
+		console.warn(`Could not parse ${settingsPath}; skipping VSCode settings update.`);
+		return;
+	}
+
+	const cssSettings = [
+		['stylelint.enable', true],
+		['stylelint.validate', ['css', 'scss']],
+		['css.validate', false],
+		['scss.validate', false]
+	];
+
+	let mutated = false;
+
+	cssSettings.forEach(([key, value]) => {
+		if (cssEnabled) {
+			if (!valuesEqual(settings[key], value)) {
+				settings[key] = value;
+				mutated = true;
+			}
+		} else if (key in settings) {
+			delete settings[key];
+			mutated = true;
+		}
+	});
+
+	if (mutated) {
+		const serialized = JSON.stringify(settings, null, '\t') + '\n';
+		fs.mkdirSync(path.dirname(settingsPath), { recursive: true });
+		fs.writeFileSync(settingsPath, serialized);
+		console.log(
+			cssEnabled
+				? 'Enabled Stylelint VSCode settings for CSS/SCSS.'
+				: 'Removed Stylelint VSCode settings because CSS linting is disabled.'
+		);
+	}
+}
+
+function valuesEqual(left, right) {
+	return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function configureVsCodeExtensions(cssEnabled) {
+	const extensionsPath = path.join(process.cwd(), '.vscode', 'extensions.json');
+	const stylelintExtension = 'stylelint.vscode-stylelint';
+
+	if (!fs.existsSync(extensionsPath)) {
+		console.log('.vscode/extensions.json not found; skipping VSCode extensions update.');
+		return;
+	}
+
+	let payload;
+	try {
+		payload = JSON.parse(fs.readFileSync(extensionsPath, 'utf8'));
+	} catch (error) {
+		console.warn(`Could not parse ${extensionsPath}; skipping VSCode extensions update.`);
+		return;
+	}
+
+	const current = new Set(payload.recommendations || []);
+	const hadStylelint = current.has(stylelintExtension);
+	const mutated = (() => {
+		if (cssEnabled) {
+			if (!hadStylelint) {
+				current.add(stylelintExtension);
+				return true;
+			}
+			return false;
+		}
+		if (hadStylelint) {
+			current.delete(stylelintExtension);
+			return true;
+		}
+		return false;
+	})();
+
+	if (mutated) {
+		payload.recommendations = Array.from(current);
+		const serialized = JSON.stringify(payload, null, '\t') + '\n';
+		fs.mkdirSync(path.dirname(extensionsPath), { recursive: true });
+		fs.writeFileSync(extensionsPath, serialized);
+		console.log(
+			cssEnabled
+				? 'Added Stylelint extension recommendation (CSS/SCSS enabled).'
+				: 'Removed Stylelint extension recommendation (CSS/SCSS disabled).'
+		);
 	}
 }
