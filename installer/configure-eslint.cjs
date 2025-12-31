@@ -7,18 +7,18 @@ const hauntedArtifacts = ['.eslintignore', '.eslintrc.cjs', 'eslint.config.js'];
 const featureToggles = resolveFeatureToggles(process.argv.slice(2));
 
 const coreDependencies = [
-	'eslint@^9.36.0',
-	'prettier@^3.6.2',
+	'eslint@^9.39.2',
+	'prettier@^3.7.4',
 	'eslint-config-prettier@^10.1.8',
 	'jsonc-eslint-parser@^2.4.1',
-	'@typescript-eslint/eslint-plugin@^8.44.1',
-	'@typescript-eslint/parser@^8.44.1',
+	'@typescript-eslint/eslint-plugin@^8.50.1',
+	'@typescript-eslint/parser@^8.50.1',
 	'eslint-plugin-import@^2.32.0'
 ];
 
 const cssDependencies = ['stylelint@^16.26.0', 'stylelint-config-standard-scss@^16.0.0'];
 const vueDependencies = [
-	'eslint-plugin-vue@^10.5.0',
+	'eslint-plugin-vue@^10.6.2',
 	'vue-eslint-parser@^10.2.0',
 	'@vue/eslint-config-typescript@^14.6.0'
 ];
@@ -162,13 +162,13 @@ function configureDependencyPlan(spellbook) {
 	}
 
 	if (!featureToggles.cssEnabled) {
-		console.log('CSS/SCSS linting disabled by flag.');
+		console.log('CSS/SCSS linting disabled.');
 	}
 
 	console.log(
 		featureToggles.markdownEnabled
 			? 'Markdown formatting enabled (no ESLint code-block linting).'
-			: 'Markdown formatting disabled by flag.'
+			: 'Markdown formatting disabled.'
 	);
 }
 
@@ -216,7 +216,9 @@ function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
 	const eslintCmd = `eslint --no-error-on-unmatched-pattern --ext ${eslintExtensions.join(',')} ./`;
 	const eslintFixCmd = `eslint --fix --no-error-on-unmatched-pattern --ext ${eslintExtensions.join(',')} ./`;
 	const stylelintCmd = cssEnabled ? ' && stylelint --allow-empty-input "**/*.{css,scss}"' : '';
-	const stylelintFixCmd = cssEnabled ? ' && stylelint --allow-empty-input --fix "**/*.{css,scss}"' : '';
+	const stylelintFixCmd = cssEnabled
+		? ' && stylelint --allow-empty-input --fix "**/*.{css,scss}"'
+		: '';
 
 	const prettierExtensions = ['js', 'jsx', 'cjs', 'mjs', 'ts', 'tsx', 'mts', 'vue', 'json'];
 	if (cssEnabled) {
@@ -231,25 +233,33 @@ function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
 		lintfix: `${eslintFixCmd}${stylelintFixCmd}`,
 		pretty: `prettier --write "**/*.{${prettierExtensions.join(',')}}"`,
 		format: 'npm run lintfix && npm run pretty',
-		cleanbuild: 'rm -rf ./dist/ && npm run lintfix && npm run format && npm run build'
+		cleanbuild: 'rm -rf ./dist/ && npm run format && npm run build',
+		lintconfig: 'node lintconfig.cjs'
 	};
 }
 
 function resolveFeatureToggles(args) {
-	let cssEnabled = readBooleanEnv(process.env.INSTALL_CSS, true);
+	let cssEnabled = readBooleanEnv(process.env.INSTALL_CSS, false);
 	let markdownEnabled = readBooleanEnv(process.env.INSTALL_MARKDOWN, true);
+	const unknownArgs = [];
 
 	args.forEach((arg) => {
 		if (arg === '--css') {
 			cssEnabled = true;
 		} else if (arg === '--no-css') {
 			cssEnabled = false;
-		} else if (arg === '--markdown') {
+		} else if (arg === '--md' || arg === '--markdown') {
 			markdownEnabled = true;
-		} else if (arg === '--no-markdown') {
+		} else if (arg === '--no-md' || arg === '--no-markdown') {
 			markdownEnabled = false;
+		} else {
+			unknownArgs.push(arg);
 		}
 	});
+
+	if (unknownArgs.length) {
+		console.warn(`Unknown options ignored: ${unknownArgs.join(', ')}`);
+	}
 
 	return { cssEnabled, markdownEnabled };
 }

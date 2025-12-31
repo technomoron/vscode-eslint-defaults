@@ -1,7 +1,9 @@
 param(
-    [string]$Version = "1.0.31",
+    [string]$Version = "1.0.32",
     [switch]$Css,
     [switch]$NoCss,
+    [switch]$Md,
+    [switch]$NoMd,
     [switch]$Markdown,
     [switch]$NoMarkdown,
     [switch]$Help
@@ -10,33 +12,35 @@ param(
 if ($Help) {
     Write-Host @"
 Usage:
-  Install-VSCodeEslintDefaults [-Version <v>] [-Css | -NoCss] [-Markdown | -NoMarkdown]
+  Install-VSCodeEslintDefaults [-Version <v>] [-Css | -NoCss] [-Md | -NoMd]
 
 Defaults:
-  Version: 1.0.31 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
-  Css: enabled unless -NoCss is provided
-  Markdown: enabled unless -NoMarkdown is provided
+  Version: 1.0.32 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
+  Css: disabled unless -Css is provided
+  Markdown: enabled unless -NoMd is provided
 "@
     exit 0
 }
 
 function Install-VSCodeEslintDefaults {
     param(
-        [string]$Version = "1.0.31",
+        [string]$Version = "1.0.32",
         [switch]$Css,
         [switch]$NoCss,
+        [switch]$Md,
+        [switch]$NoMd,
         [switch]$Markdown,
         [switch]$NoMarkdown
     )
 
     $resolvedVersion = if ($env:VSCODE_ESLINT_DEFAULTS_VERSION) { $env:VSCODE_ESLINT_DEFAULTS_VERSION } else { $Version }
-    $cssEnabled = $true
+    $cssEnabled = $false
     if ($NoCss) { $cssEnabled = $false }
     elseif ($Css) { $cssEnabled = $true }
 
     $markdownEnabled = $true
-    if ($NoMarkdown) { $markdownEnabled = $false }
-    elseif ($Markdown) { $markdownEnabled = $true }
+    if ($NoMd -or $NoMarkdown) { $markdownEnabled = $false }
+    elseif ($Md -or $Markdown) { $markdownEnabled = $true }
 
     $archiveUrl = "https://github.com/technomoron/vscode-eslint-defaults/releases/download/v$resolvedVersion/installer.tgz"
     $tmpDir = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
@@ -67,4 +71,4 @@ function Install-VSCodeEslintDefaults {
     Remove-Item -Force -Recurse $tmpDir -ErrorAction SilentlyContinue
 }
 
-Install-VSCodeEslintDefaults -Version $Version -Css:$Css -NoCss:$NoCss -Markdown:$Markdown -NoMarkdown:$NoMarkdown
+Install-VSCodeEslintDefaults -Version $Version -Css:$Css -NoCss:$NoCss -Md:$Md -NoMd:$NoMd -Markdown:$Markdown -NoMarkdown:$NoMarkdown
