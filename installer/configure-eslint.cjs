@@ -335,7 +335,23 @@ function removeStylelintConfigIfDisabled() {
 function ensurePrettierConfig() {
 	const prettierRc = path.join(process.cwd(), '.prettierrc');
 	const prettierJson = path.join(process.cwd(), '.prettierrc.json');
-	const defaults = { printWidth: 80, proseWrap: 'always' };
+	const defaults = {
+		useTabs: true,
+		tabWidth: 4,
+		printWidth: 80,
+		proseWrap: 'always',
+		overrides: [
+			{
+				files: '*.md',
+				options: {
+					useTabs: true,
+					tabWidth: 4,
+					printWidth: 80,
+					proseWrap: 'always'
+				}
+			}
+		]
+	};
 
 	const hasRc = fs.existsSync(prettierRc);
 	const hasJson = fs.existsSync(prettierJson);

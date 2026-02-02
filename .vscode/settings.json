@@ -16,6 +16,8 @@
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": "explicit"
 	},
+	"editor.insertSpaces": false,
+	"editor.tabSize": 4,
 	"stylelint.enable": true,
 	"stylelint.validate": ["css", "scss"],
 	"css.validate": false,
