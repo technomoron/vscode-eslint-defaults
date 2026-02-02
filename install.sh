@@ -14,6 +14,7 @@ Usage: install.sh [options]
 
 Options:
   --version <v>      Version tag without the leading "v" (default: 1.0.33 or $VSCODE_ESLINT_DEFAULTS_VERSION)
+  --version=<v>      Same as above (inline assignment)
   --css / --no-css   Enable or disable CSS/SCSS linting (default: disabled)
   --md / --no-md     Enable or disable Markdown formatting (default: enabled)
   --vue / --no-vue   Force Vue lint stack on/off (default: auto-detect)
@@ -26,6 +27,9 @@ while [[ $# -gt 0 ]]; do
 		--version|-v)
 			shift
 			VERSION="${1:-$VERSION}"
+			;;
+		--version=*)
+			VERSION="${1#--version=}"
 			;;
 		--css)
 			CSS_ENABLED=1
