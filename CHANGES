@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+v1.34 (2026-02-02)
+--------------
+- Accept --version=<v> style in install.sh.
+
 v1.33 (2026-02-02)
 --------------
 - Bump lint/tooling dependencies to current versions.
