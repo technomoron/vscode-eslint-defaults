@@ -43,9 +43,15 @@ export default [
 	{
 		ignores: [
 			'node_modules',
+			'**/node_modules/**',
 			'dist',
+			'**/dist/**',
 			'.output',
+			'**/.output/**',
 			'.nuxt',
+			'**/.nuxt/**',
+			'.nitro',
+			'**/.nitro/**',
 			'.netlify',
 			'node_modules/.netlify',
 			'4000/.nuxt',

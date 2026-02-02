@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+v1.36 (2026-02-02)
+--------------
+- Ignore nested dist/node_modules and Nuxt build output directories.
+
 v1.35 (2026-02-02)
 --------------
 - Enforce tabs with tabWidth 4 in shipped Prettier and VSCode defaults.
