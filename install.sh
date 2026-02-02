@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION_DEFAULT="1.0.32"
+VERSION_DEFAULT="1.0.33"
 VERSION="${VSCODE_ESLINT_DEFAULTS_VERSION:-$VERSION_DEFAULT}"
 CSS_ENABLED=0
 MARKDOWN_ENABLED=1
+VUE_MODE="auto"
 RELEASE_URL_BASE="https://github.com/technomoron/vscode-eslint-defaults/releases/download"
 
 usage() {
@@ -12,9 +13,10 @@ usage() {
 Usage: install.sh [options]
 
 Options:
-  --version <v>      Version tag without the leading "v" (default: 1.0.32 or $VSCODE_ESLINT_DEFAULTS_VERSION)
+  --version <v>      Version tag without the leading "v" (default: 1.0.33 or $VSCODE_ESLINT_DEFAULTS_VERSION)
   --css / --no-css   Enable or disable CSS/SCSS linting (default: disabled)
   --md / --no-md     Enable or disable Markdown formatting (default: enabled)
+  --vue / --no-vue   Force Vue lint stack on/off (default: auto-detect)
   -h, --help         Show this help
 EOF
 }
@@ -36,6 +38,12 @@ while [[ $# -gt 0 ]]; do
 			;;
 		--no-md|--no-markdown)
 			MARKDOWN_ENABLED=0
+			;;
+		--vue)
+			VUE_MODE="on"
+			;;
+		--no-vue)
+			VUE_MODE="off"
 			;;
 		-h|--help)
 			usage
@@ -61,7 +69,7 @@ echo "Extracting installer files..."
 tar -xzf "$ARCHIVE_PATH" -C "$PWD"
 
 echo "Running configure-eslint.cjs..."
-INSTALL_CSS="$CSS_ENABLED" INSTALL_MARKDOWN="$MARKDOWN_ENABLED" node configure-eslint.cjs
+INSTALL_CSS="$CSS_ENABLED" INSTALL_MARKDOWN="$MARKDOWN_ENABLED" INSTALL_VUE="$VUE_MODE" node configure-eslint.cjs
 
 if [[ "$CSS_ENABLED" -eq 0 ]] && [[ -f "stylelint.config.cjs" ]]; then
 	echo "CSS disabled; removing stylelint.config.cjs..."

@@ -8,17 +8,17 @@ const featureToggles = resolveFeatureToggles(process.argv.slice(2));
 
 const coreDependencies = [
 	'eslint@^9.39.2',
-	'prettier@^3.7.4',
+	'prettier@^3.8.1',
 	'eslint-config-prettier@^10.1.8',
-	'jsonc-eslint-parser@^2.4.1',
-	'@typescript-eslint/eslint-plugin@^8.50.1',
-	'@typescript-eslint/parser@^8.50.1',
+	'jsonc-eslint-parser@^2.4.2',
+	'@typescript-eslint/eslint-plugin@^8.54.0',
+	'@typescript-eslint/parser@^8.54.0',
 	'eslint-plugin-import@^2.32.0'
 ];
 
-const cssDependencies = ['stylelint@^16.26.0', 'stylelint-config-standard-scss@^16.0.0'];
+const cssDependencies = ['stylelint@^17.1.0', 'stylelint-config-standard-scss@^17.0.0'];
 const vueDependencies = [
-	'eslint-plugin-vue@^10.6.2',
+	'eslint-plugin-vue@^10.7.0',
 	'vue-eslint-parser@^10.2.0',
 	'@vue/eslint-config-typescript@^14.6.0'
 ];
@@ -143,7 +143,8 @@ function purgeUnlistedDependencies(spellbook) {
 }
 
 function configureDependencyPlan(spellbook) {
-	vueStackEnabled = detectVueStack(spellbook);
+	const vueMode = featureToggles.vueMode ?? 'auto';
+	vueStackEnabled = vueMode === 'auto' ? detectVueStack(spellbook) : vueMode === 'on';
 	dependenciesToInstall = [...coreDependencies];
 
 	if (featureToggles.cssEnabled) {
@@ -155,7 +156,11 @@ function configureDependencyPlan(spellbook) {
 
 	allowedLintDependencies = new Set(stripVersions(dependenciesToInstall));
 
-	if (vueStackEnabled) {
+	if (vueMode === 'on') {
+		console.log('Vue lint stack forced on via --vue.');
+	} else if (vueMode === 'off') {
+		console.log('Vue lint stack disabled via --no-vue.');
+	} else if (vueStackEnabled) {
 		console.log('Vue/Nuxt dependencies detected; enabling Vue lint stack.');
 	} else {
 		console.log('No Vue/Nuxt dependencies detected; using TypeScript-only lint stack.');
@@ -241,6 +246,7 @@ function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
 function resolveFeatureToggles(args) {
 	let cssEnabled = readBooleanEnv(process.env.INSTALL_CSS, false);
 	let markdownEnabled = readBooleanEnv(process.env.INSTALL_MARKDOWN, true);
+	let vueMode = readVueModeEnv(process.env.INSTALL_VUE);
 	const unknownArgs = [];
 
 	args.forEach((arg) => {
@@ -252,6 +258,10 @@ function resolveFeatureToggles(args) {
 			markdownEnabled = true;
 		} else if (arg === '--no-md' || arg === '--no-markdown') {
 			markdownEnabled = false;
+		} else if (arg === '--vue') {
+			vueMode = 'on';
+		} else if (arg === '--no-vue') {
+			vueMode = 'off';
 		} else {
 			unknownArgs.push(arg);
 		}
@@ -261,7 +271,7 @@ function resolveFeatureToggles(args) {
 		console.warn(`Unknown options ignored: ${unknownArgs.join(', ')}`);
 	}
 
-	return { cssEnabled, markdownEnabled };
+	return { cssEnabled, markdownEnabled, vueMode };
 }
 
 function readBooleanEnv(value, defaultValue) {
@@ -277,6 +287,24 @@ function readBooleanEnv(value, defaultValue) {
 		return true;
 	}
 	return defaultValue;
+}
+
+function readVueModeEnv(value) {
+	if (value === undefined) {
+		return 'auto';
+	}
+
+	const normalized = String(value).toLowerCase();
+	if (['auto', 'detect'].includes(normalized)) {
+		return 'auto';
+	}
+	if (['1', 'true', 'yes', 'on', 'vue'].includes(normalized)) {
+		return 'on';
+	}
+	if (['0', 'false', 'no', 'off', 'none'].includes(normalized)) {
+		return 'off';
+	}
+	return 'auto';
 }
 
 function shouldPurgeDependency(name) {

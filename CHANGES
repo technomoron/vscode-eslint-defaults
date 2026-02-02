@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+v1.33 (2026-02-02)
+--------------
+- Bump lint/tooling dependencies to current versions.
+- Add --vue/--no-vue switch (default auto-detect) to installers and updater.
+- Update README install commands to be runnable as-is with explicit defaults.
+
 v1.32 (2025-12-31)
 --------------
 - Add lintconfig updater script and script target to refresh installer config
