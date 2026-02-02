@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+v1.35 (2026-02-02)
+--------------
+- Enforce tabs with tabWidth 4 in shipped Prettier and VSCode defaults.
+
 v1.34 (2026-02-02)
 --------------
 - Accept --version=<v> style in install.sh.
