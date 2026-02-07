@@ -39,6 +39,9 @@ const vueSpecificBlocks = hasVueSupport
 	  ]
 	: [];
 
+const { hasMarkdownSupport, markdownConfigs } = await loadMarkdownSupport();
+const markdownBlocks = hasMarkdownSupport ? markdownConfigs : [];
+
 export default [
 	{
 		ignores: [
@@ -70,6 +73,7 @@ export default [
 		}
 	},
 	...vueSpecificBlocks,
+	...markdownBlocks,
 	{
 		files: ['**/*.json'],
 		languageOptions: {
@@ -139,6 +143,43 @@ async function loadVueSupport() {
 				hasVueSupport: false,
 				pluginVue: null,
 				vueTypeScriptConfigs: []
+			};
+		}
+
+		throw error;
+	}
+}
+
+async function loadMarkdownSupport() {
+	try {
+		const markdownModule = await import('@eslint/markdown');
+		const markdownPlugin = unwrapDefault(markdownModule);
+		const recommended = Array.isArray(markdownPlugin?.configs?.recommended)
+			? markdownPlugin.configs.recommended
+			: [];
+
+		if (recommended.length === 0) {
+			return {
+				hasMarkdownSupport: false,
+				markdownConfigs: []
+			};
+		}
+
+		return {
+			hasMarkdownSupport: true,
+			markdownConfigs: [
+				...recommended,
+				{
+					files: ['**/*.md'],
+					language: 'markdown/gfm'
+				}
+			]
+		};
+	} catch (error) {
+		if (isModuleNotFoundError(error)) {
+			return {
+				hasMarkdownSupport: false,
+				markdownConfigs: []
 			};
 		}
 

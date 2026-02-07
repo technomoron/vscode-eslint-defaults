@@ -1,6 +1,6 @@
 {
 	"name": "vscode-eslint-defaults",
-	"version": "1.0.37",
+	"version": "1.0.38",
 	"description": "Default editor config and eslint config for js/ts/vue",
 	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
 	"bugs": {
@@ -17,14 +17,15 @@
 		"node": ">=22.0.0"
 	},
 	"main": "installer.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json ./ && stylelint --allow-empty-input \"**/*.{css,scss}\"",
-		"lintfix": "eslint --fix --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json ./ && stylelint --allow-empty-input --fix \"**/*.{css,scss}\"",
-		"format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\"",
-		"lintconfig": "node installer/lintconfig.cjs"
-	},
+		"scripts": {
+			"test": "echo \"Error: no test specified\" && exit 1",
+			"lint": "eslint --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json,.md ./ && stylelint --allow-empty-input \"**/*.{css,scss}\"",
+			"lintfix": "eslint --fix --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json,.md ./ && stylelint --allow-empty-input --fix \"**/*.{css,scss}\"",
+			"format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\"",
+			"lintconfig": "node installer/lintconfig.cjs"
+		},
 	"devDependencies": {
+		"@eslint/markdown": "^7.5.1",
 		"@typescript-eslint/eslint-plugin": "^8.54.0",
 		"@typescript-eslint/parser": "^8.54.0",
 		"@vue/eslint-config-typescript": "^14.6.0",

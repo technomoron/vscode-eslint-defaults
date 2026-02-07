@@ -7,21 +7,21 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --no-css --no-md --no-vue --version=1.0.37
+curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --no-css --no-md --no-vue --version=1.0.38
 ```
 
 Windows with Power Shell:
 
 ```powershell
-iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.37 -NoCss -NoMd -NoVue
+iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.38 -NoCss -NoMd -NoVue
 ```
 
 Flags:
 - Default install flags are `--no-css --no-md --no-vue` / `-NoCss -NoMd -NoVue`.
 - Enable CSS/SCSS linting with `--css` or `-Css`.
-- Enable Markdown formatting with `--md` or `-Md`.
+- Enable Markdown linting/formatting with `--md` or `-Md`.
 - Force the Vue lint stack on with `--vue` or `-Vue`.
-- Override the release with `--version=1.0.37` / `-Version 1.0.37` (defaults to 1.0.37 or `$VSCODE_ESLINT_DEFAULTS_VERSION`).
+- Override the release with `--version=1.0.38` / `-Version 1.0.38` (defaults to 1.0.38 or `$VSCODE_ESLINT_DEFAULTS_VERSION`).
 
 The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
 

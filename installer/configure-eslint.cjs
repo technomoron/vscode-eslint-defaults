@@ -16,6 +16,7 @@ const coreDependencies = [
 	'eslint-plugin-import@^2.32.0'
 ];
 
+const markdownDependencies = ['@eslint/markdown@^7.5.1'];
 const cssDependencies = ['stylelint@^17.1.1', 'stylelint-config-standard-scss@^17.0.0'];
 const vueDependencies = [
 	'eslint-plugin-vue@^10.7.0',
@@ -28,7 +29,7 @@ const lintSections = ['dependencies', 'devDependencies', 'optionalDependencies',
 const lintTokens = ['eslint', 'prettier', 'stylelint'];
 const purgedDependencyNames = new Set();
 const cataloguedLintDependencies = new Set(
-	stripVersions([...coreDependencies, ...cssDependencies, ...vueDependencies])
+	stripVersions([...coreDependencies, ...markdownDependencies, ...cssDependencies, ...vueDependencies])
 );
 let dependenciesToInstall = [];
 let allowedLintDependencies = new Set();
@@ -150,6 +151,9 @@ function configureDependencyPlan(spellbook) {
 	if (featureToggles.cssEnabled) {
 		dependenciesToInstall.push(...cssDependencies);
 	}
+	if (featureToggles.markdownEnabled) {
+		dependenciesToInstall.push(...markdownDependencies);
+	}
 	if (vueStackEnabled) {
 		dependenciesToInstall.push(...vueDependencies);
 	}
@@ -172,7 +176,7 @@ function configureDependencyPlan(spellbook) {
 
 	console.log(
 		featureToggles.markdownEnabled
-			? 'Markdown formatting enabled (no ESLint code-block linting).'
+			? 'Markdown linting and formatting enabled.'
 			: 'Markdown formatting disabled.'
 	);
 }
@@ -217,6 +221,9 @@ function stripVersions(specs) {
 
 function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
 	const eslintExtensions = ['.js', '.cjs', '.mjs', '.ts', '.mts', '.tsx', '.vue', '.json'];
+	if (markdownEnabled) {
+		eslintExtensions.push('.md');
+	}
 
 	const eslintCmd = `eslint --no-error-on-unmatched-pattern --ext ${eslintExtensions.join(',')} ./`;
 	const eslintFixCmd = `eslint --fix --no-error-on-unmatched-pattern --ext ${eslintExtensions.join(',')} ./`;
