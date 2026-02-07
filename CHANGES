@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+v1.37 (2026-02-07)
+--------------
+- Bump Stylelint to 17.1.1 (installer + dev deps).
+- Drop deprecated eslint-plugin-markdown (Markdown is formatting-only).
+- Add root eslint.config.mjs and align lint scripts with installer defaults.
+
 v1.36 (2026-02-02)
 --------------
 - Ignore nested dist/node_modules and Nuxt build output directories.

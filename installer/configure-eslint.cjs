@@ -16,7 +16,7 @@ const coreDependencies = [
 	'eslint-plugin-import@^2.32.0'
 ];
 
-const cssDependencies = ['stylelint@^17.1.0', 'stylelint-config-standard-scss@^17.0.0'];
+const cssDependencies = ['stylelint@^17.1.1', 'stylelint-config-standard-scss@^17.0.0'];
 const vueDependencies = [
 	'eslint-plugin-vue@^10.7.0',
 	'vue-eslint-parser@^10.2.0',

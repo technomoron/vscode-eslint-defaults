@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "1.0.36",
+    [string]$Version = "1.0.37",
     [switch]$Css,
     [switch]$NoCss,
     [switch]$Md,
@@ -17,7 +17,7 @@ Usage:
   Install-VSCodeEslintDefaults [-Version <v>] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue]
 
 Defaults:
-  Version: 1.0.36 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
+  Version: 1.0.37 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
   Css: disabled unless -Css is provided
   Markdown: enabled unless -NoMd is provided
   Vue: auto-detect unless -Vue or -NoVue is provided
@@ -27,7 +27,7 @@ Defaults:
 
 function Install-VSCodeEslintDefaults {
     param(
-        [string]$Version = "1.0.36",
+        [string]$Version = "1.0.37",
         [switch]$Css,
         [switch]$NoCss,
         [switch]$Md,
