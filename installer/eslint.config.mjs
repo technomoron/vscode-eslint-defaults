@@ -37,7 +37,7 @@ const vueSpecificBlocks = hasVueSupport
 				}
 			}
 	  ]
-	: [];
+	: [{ ignores: ['**/*.vue'] }];
 
 const { hasMarkdownSupport, markdownConfigs } = await loadMarkdownSupport();
 const markdownBlocks = hasMarkdownSupport ? markdownConfigs : [];
