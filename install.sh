@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION_DEFAULT="1.0.39"
+VERSION_DEFAULT="1.0.40"
 VERSION="${VSCODE_ESLINT_DEFAULTS_VERSION:-$VERSION_DEFAULT}"
 CSS_ENABLED=0
 MARKDOWN_ENABLED=1
@@ -17,7 +17,7 @@ usage() {
 Usage: install.sh [options]
 
 Options:
-  --version <v>      Version tag without the leading "v" (default: 1.0.39 or $VSCODE_ESLINT_DEFAULTS_VERSION)
+  --version <v>      Version tag without the leading "v" (default: 1.0.40 or $VSCODE_ESLINT_DEFAULTS_VERSION)
   --version=<v>      Same as above (inline assignment)
   --css / --no-css   Enable or disable CSS/SCSS linting (default: disabled)
   --md / --no-md     Enable or disable Markdown formatting (default: enabled)
