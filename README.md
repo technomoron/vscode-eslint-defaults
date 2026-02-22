@@ -40,6 +40,8 @@ These flags also work with `node configure-eslint.cjs` and `npm run lintconfig -
 With `--auto`, CSS/Markdown are detected from files and Vue from dependencies (explicit flags still win).
 When you run the installer/configure step, the generated `lintconfig` script is updated with the selected CSS/Markdown/Vue flags so future updates reuse them.
 
+In a monorepo, Vue detection only reads the root `package.json` and will not find Vue declared in sub-packages. Use `--vue` / `-Vue` explicitly in that case.
+
 Example:
 
 ```bash
