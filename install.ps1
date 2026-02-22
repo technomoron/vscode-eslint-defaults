@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "1.0.38",
+    [string]$Version = "1.0.39",
     [switch]$Css,
     [switch]$NoCss,
     [switch]$Md,
@@ -17,7 +17,7 @@ Usage:
   Install-VSCodeEslintDefaults [-Version <v>] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue]
 
 Defaults:
-  Version: 1.0.38 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
+  Version: 1.0.39 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
   Css: disabled unless -Css is provided
   Markdown: enabled unless -NoMd is provided
   Vue: auto-detect unless -Vue or -NoVue is provided
@@ -27,7 +27,7 @@ Defaults:
 
 function Install-VSCodeEslintDefaults {
     param(
-        [string]$Version = "1.0.38",
+        [string]$Version = "1.0.39",
         [switch]$Css,
         [switch]$NoCss,
         [switch]$Md,
@@ -50,6 +50,35 @@ function Install-VSCodeEslintDefaults {
     $vueMode = "auto"
     if ($NoVue) { $vueMode = "off" }
     elseif ($Vue) { $vueMode = "on" }
+
+    $bashCmd = Get-Command bash -ErrorAction SilentlyContinue
+    $curlCmd = Get-Command curl -ErrorAction SilentlyContinue
+    $tarCmd = Get-Command tar -ErrorAction SilentlyContinue
+
+    if ($bashCmd -and $curlCmd -and $tarCmd) {
+        $tmpInstallSh = Join-Path $env:TEMP ("vscode-eslint-defaults-install-{0}.sh" -f [System.Guid]::NewGuid().ToString("N"))
+        $scriptUrl = "https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/v$resolvedVersion/install.sh"
+        $bashArgs = @("--version=$resolvedVersion")
+
+        if ($cssEnabled) { $bashArgs += "--css" } else { $bashArgs += "--no-css" }
+        if ($markdownEnabled) { $bashArgs += "--md" } else { $bashArgs += "--no-md" }
+        if ($vueMode -eq "on") { $bashArgs += "--vue" }
+        elseif ($vueMode -eq "off") { $bashArgs += "--no-vue" }
+
+        try {
+            Write-Host "Detected bash/curl/tar; using install.sh path..."
+            Invoke-WebRequest -Uri $scriptUrl -OutFile $tmpInstallSh -UseBasicParsing
+            & $bashCmd.Source $tmpInstallSh @bashArgs
+            if ($LASTEXITCODE -eq 0) {
+                return
+            }
+            Write-Warning "bash installer exited with code $LASTEXITCODE; falling back to PowerShell installer."
+        } catch {
+            Write-Warning "bash installer path failed ($($_.Exception.Message)); falling back to PowerShell installer."
+        } finally {
+            Remove-Item -Force $tmpInstallSh -ErrorAction SilentlyContinue
+        }
+    }
 
     $archiveUrl = "https://github.com/technomoron/vscode-eslint-defaults/releases/download/v$resolvedVersion/installer.tgz"
     $tmpDir = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())

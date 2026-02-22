@@ -7,13 +7,13 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --no-css --no-md --no-vue --version=1.0.38
+curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --no-css --no-md --no-vue --version=1.0.39
 ```
 
 Windows with Power Shell:
 
 ```powershell
-iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.38 -NoCss -NoMd -NoVue
+iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.39 -NoCss -NoMd -NoVue
 ```
 
 Flags:
@@ -21,7 +21,7 @@ Flags:
 - Enable CSS/SCSS linting with `--css` or `-Css`.
 - Enable Markdown linting/formatting with `--md` or `-Md`.
 - Force the Vue lint stack on with `--vue` or `-Vue`.
-- Override the release with `--version=1.0.38` / `-Version 1.0.38` (defaults to 1.0.38 or `$VSCODE_ESLINT_DEFAULTS_VERSION`).
+- Override the release with `--version=1.0.39` / `-Version 1.0.39` (defaults to 1.0.39 or `$VSCODE_ESLINT_DEFAULTS_VERSION`).
 
 The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
 
@@ -49,8 +49,8 @@ node configure-eslint.cjs --css --no-md --vue
 `npm run lint` - Shows errors but is non-destructive
 `npm run lintfix` - Fixes errors and warnings that eslint can sort out itself
 `npm run pretty` - Formats files using prettier and `.prettierrc` settings
-`npm run format` - Runs lintfix and prettier
-`npm run cleanbuild` - Cleans dist, formats, then builds
+`npm run format` - Runs lintfix and prettier via `npm-run-all` (`run-s`)
+`npm run cleanbuild` - Cleans dist via `rimraf`, then runs format and build via `npm-run-all` (`run-s`)
 `npm run lintconfig` - Downloads the latest installer and refreshes lint config
 ```
 

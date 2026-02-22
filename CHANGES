@@ -1,6 +1,16 @@
 CHANGES
 =======
 
+v1.39 (2026-02-22)
+--------------
+- Make generated script chaining package-manager agnostic via `npm-run-all`
+  (`run-s`).
+- Replace `rm -rf` in generated `cleanbuild` with cross-platform `rimraf`.
+- Bump compatible lint/tooling dependency versions (keep ESLint v9 and
+  `jsonc-eslint-parser` v2 for compatibility).
+- On Windows, prefer running `install.sh` through `bash` when `bash` + `curl` +
+  `tar` are available; fall back to PowerShell installer flow.
+
 v1.38 (2026-02-07)
 --------------
 - When Markdown is enabled (`--md`), lint `.md` files via `@eslint/markdown` and include them in lint scripts.

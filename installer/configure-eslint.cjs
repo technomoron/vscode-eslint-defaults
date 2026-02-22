@@ -7,21 +7,23 @@ const hauntedArtifacts = ['.eslintignore', '.eslintrc.cjs', 'eslint.config.js'];
 const featureToggles = resolveFeatureToggles(process.argv.slice(2));
 
 const coreDependencies = [
-	'eslint@^9.39.2',
+	'eslint@^9.39.3',
 	'prettier@^3.8.1',
+	'npm-run-all@^4.1.5',
+	'rimraf@^6.1.3',
 	'eslint-config-prettier@^10.1.8',
 	'jsonc-eslint-parser@^2.4.2',
-	'@typescript-eslint/eslint-plugin@^8.54.0',
-	'@typescript-eslint/parser@^8.54.0',
+	'@typescript-eslint/eslint-plugin@^8.56.0',
+	'@typescript-eslint/parser@^8.56.0',
 	'eslint-plugin-import@^2.32.0'
 ];
 
 const markdownDependencies = ['@eslint/markdown@^7.5.1'];
-const cssDependencies = ['stylelint@^17.1.1', 'stylelint-config-standard-scss@^17.0.0'];
+const cssDependencies = ['stylelint@^17.3.0', 'stylelint-config-standard-scss@^17.0.0'];
 const vueDependencies = [
-	'eslint-plugin-vue@^10.7.0',
-	'vue-eslint-parser@^10.2.0',
-	'@vue/eslint-config-typescript@^14.6.0'
+	'eslint-plugin-vue@^10.8.0',
+	'vue-eslint-parser@^10.4.0',
+	'@vue/eslint-config-typescript@^14.7.0'
 ];
 
 const banishedDependencies = ['eslint', 'tslint'];
@@ -244,8 +246,8 @@ function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
 		lint: `${eslintCmd}${stylelintCmd}`,
 		lintfix: `${eslintFixCmd}${stylelintFixCmd}`,
 		pretty: `prettier --write "**/*.{${prettierExtensions.join(',')}}"`,
-		format: 'npm run lintfix && npm run pretty',
-		cleanbuild: 'rm -rf ./dist/ && npm run format && npm run build',
+		format: 'run-s lintfix pretty',
+		cleanbuild: 'rimraf dist && run-s format build',
 		lintconfig: 'node lintconfig.cjs'
 	};
 }
