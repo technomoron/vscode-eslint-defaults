@@ -36,6 +36,15 @@ const cataloguedLintDependencies = new Set(
 let dependenciesToInstall = [];
 let allowedLintDependencies = new Set();
 let vueStackEnabled = false;
+const ignoredScanDirs = new Set([
+	'.git',
+	'node_modules',
+	'dist',
+	'build',
+	'coverage',
+	'.output',
+	'.nuxt'
+]);
 
 const incantationScripts = buildIncantationScripts(featureToggles);
 
@@ -221,7 +230,15 @@ function stripVersions(specs) {
 	});
 }
 
-function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
+function buildIncantationScripts({
+	cssEnabled,
+	markdownEnabled,
+	vueMode,
+	autoMode,
+	cssExplicit,
+	markdownExplicit,
+	vueExplicit
+}) {
 	const eslintExtensions = ['.js', '.cjs', '.mjs', '.ts', '.mts', '.tsx', '.vue', '.json'];
 	if (markdownEnabled) {
 		eslintExtensions.push('.md');
@@ -242,13 +259,31 @@ function buildIncantationScripts({ cssEnabled, markdownEnabled }) {
 		prettierExtensions.push('md');
 	}
 
+	const lintconfigArgs = [];
+	if (autoMode) {
+		lintconfigArgs.push('--auto');
+		if (cssExplicit) {
+			lintconfigArgs.push(cssEnabled ? '--css' : '--no-css');
+		}
+		if (markdownExplicit) {
+			lintconfigArgs.push(markdownEnabled ? '--md' : '--no-md');
+		}
+		if (vueExplicit) {
+			lintconfigArgs.push(vueMode === 'on' ? '--vue' : '--no-vue');
+		}
+	} else {
+		lintconfigArgs.push(cssEnabled ? '--css' : '--no-css');
+		lintconfigArgs.push(markdownEnabled ? '--md' : '--no-md');
+		lintconfigArgs.push(vueMode === 'on' ? '--vue' : '--no-vue');
+	}
+
 	return {
 		lint: `${eslintCmd}${stylelintCmd}`,
 		lintfix: `${eslintFixCmd}${stylelintFixCmd}`,
 		pretty: `prettier --write "**/*.{${prettierExtensions.join(',')}}"`,
 		format: 'run-s lintfix pretty',
 		cleanbuild: 'rimraf dist && run-s format build',
-		lintconfig: 'node lintconfig.cjs'
+		lintconfig: `node lintconfig.cjs ${lintconfigArgs.join(' ')}`
 	};
 }
 
@@ -256,31 +291,121 @@ function resolveFeatureToggles(args) {
 	let cssEnabled = readBooleanEnv(process.env.INSTALL_CSS, false);
 	let markdownEnabled = readBooleanEnv(process.env.INSTALL_MARKDOWN, true);
 	let vueMode = readVueModeEnv(process.env.INSTALL_VUE);
+	let autoMode = readBooleanEnv(process.env.INSTALL_AUTO, false);
+	let cssExplicit = readBooleanEnv(process.env.INSTALL_CSS_EXPLICIT, false);
+	let markdownExplicit = readBooleanEnv(process.env.INSTALL_MARKDOWN_EXPLICIT, false);
+	let vueExplicit = readBooleanEnv(process.env.INSTALL_VUE_EXPLICIT, false);
 	const unknownArgs = [];
 
 	args.forEach((arg) => {
-		if (arg === '--css') {
+		if (arg === '--auto') {
+			autoMode = true;
+		} else if (arg === '--no-auto') {
+			autoMode = false;
+		} else if (arg === '--css') {
 			cssEnabled = true;
+			cssExplicit = true;
 		} else if (arg === '--no-css') {
 			cssEnabled = false;
+			cssExplicit = true;
 		} else if (arg === '--md' || arg === '--markdown') {
 			markdownEnabled = true;
+			markdownExplicit = true;
 		} else if (arg === '--no-md' || arg === '--no-markdown') {
 			markdownEnabled = false;
+			markdownExplicit = true;
 		} else if (arg === '--vue') {
 			vueMode = 'on';
+			vueExplicit = true;
 		} else if (arg === '--no-vue') {
 			vueMode = 'off';
+			vueExplicit = true;
 		} else {
 			unknownArgs.push(arg);
 		}
 	});
 
+	if (autoMode) {
+		const detected = detectProjectFileFeatures(process.cwd());
+		if (!cssExplicit) {
+			cssEnabled = detected.cssEnabled;
+		}
+		if (!markdownExplicit) {
+			markdownEnabled = detected.markdownEnabled;
+		}
+		if (!vueExplicit) {
+			vueMode = 'auto';
+		}
+		console.log(
+			`Auto mode: css=${detected.cssEnabled ? 'on' : 'off'}, markdown=${
+				detected.markdownEnabled ? 'on' : 'off'
+			}, vue=auto`
+		);
+	}
+
 	if (unknownArgs.length) {
 		console.warn(`Unknown options ignored: ${unknownArgs.join(', ')}`);
 	}
 
-	return { cssEnabled, markdownEnabled, vueMode };
+	return {
+		cssEnabled,
+		markdownEnabled,
+		vueMode,
+		autoMode,
+		cssExplicit,
+		markdownExplicit,
+		vueExplicit
+	};
+}
+
+function detectProjectFileFeatures(rootDir) {
+	const state = { cssEnabled: false, markdownEnabled: false };
+	const queue = [rootDir];
+
+	while (queue.length && !(state.cssEnabled && state.markdownEnabled)) {
+		const currentDir = queue.pop();
+		let entries = [];
+		try {
+			entries = fs.readdirSync(currentDir, { withFileTypes: true });
+		} catch {
+			continue;
+		}
+
+		for (const entry of entries) {
+			if (entry.name.startsWith('.') && entry.name !== '.github') {
+				continue;
+			}
+
+			const fullPath = path.join(currentDir, entry.name);
+			if (entry.isDirectory()) {
+				if (ignoredScanDirs.has(entry.name)) {
+					continue;
+				}
+				queue.push(fullPath);
+				continue;
+			}
+
+			if (!entry.isFile()) {
+				continue;
+			}
+
+			if (!state.cssEnabled && (entry.name.endsWith('.css') || entry.name.endsWith('.scss'))) {
+				state.cssEnabled = true;
+			}
+			if (
+				!state.markdownEnabled &&
+				(entry.name.endsWith('.md') || entry.name.endsWith('.markdown'))
+			) {
+				state.markdownEnabled = true;
+			}
+
+			if (state.cssEnabled && state.markdownEnabled) {
+				break;
+			}
+		}
+	}
+
+	return state;
 }
 
 function readBooleanEnv(value, defaultValue) {
@@ -300,7 +425,7 @@ function readBooleanEnv(value, defaultValue) {
 
 function readVueModeEnv(value) {
 	if (value === undefined) {
-		return 'auto';
+		return 'off';
 	}
 
 	const normalized = String(value).toLowerCase();
@@ -313,7 +438,7 @@ function readVueModeEnv(value) {
 	if (['0', 'false', 'no', 'off', 'none'].includes(normalized)) {
 		return 'off';
 	}
-	return 'auto';
+	return 'off';
 }
 
 function shouldPurgeDependency(name) {

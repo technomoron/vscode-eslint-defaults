@@ -7,20 +7,21 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --no-css --no-md --no-vue --version=1.0.39
+curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --auto --version=1.0.39
 ```
 
 Windows with Power Shell:
 
 ```powershell
-iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.39 -NoCss -NoMd -NoVue
+iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.39 -Auto
 ```
 
 Flags:
-- Default install flags are `--no-css --no-md --no-vue` / `-NoCss -NoMd -NoVue`.
+- Default install behavior is no CSS, Markdown on, Vue off; use `--auto` / `-Auto` to detect from project files/dependencies.
 - Enable CSS/SCSS linting with `--css` or `-Css`.
 - Enable Markdown linting/formatting with `--md` or `-Md`.
 - Force the Vue lint stack on with `--vue` or `-Vue`.
+- Auto-detect CSS/Markdown usage and Vue dependencies with `--auto` or `-Auto`.
 - Override the release with `--version=1.0.39` / `-Version 1.0.39` (defaults to 1.0.39 or `$VSCODE_ESLINT_DEFAULTS_VERSION`).
 
 The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
@@ -36,6 +37,8 @@ npm run lintconfig -- --css
 ```
 
 These flags also work with `node configure-eslint.cjs` and `npm run lintconfig --`. Unknown options are ignored with a warning.
+With `--auto`, CSS/Markdown are detected from files and Vue from dependencies (explicit flags still win).
+When you run the installer/configure step, the generated `lintconfig` script is updated with the selected CSS/Markdown/Vue flags so future updates reuse them.
 
 Example:
 

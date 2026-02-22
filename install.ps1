@@ -6,6 +6,7 @@ param(
     [switch]$NoMd,
     [switch]$Vue,
     [switch]$NoVue,
+    [switch]$Auto,
     [switch]$Markdown,
     [switch]$NoMarkdown,
     [switch]$Help
@@ -14,13 +15,13 @@ param(
 if ($Help) {
     Write-Host @"
 Usage:
-  Install-VSCodeEslintDefaults [-Version <v>] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue]
+  Install-VSCodeEslintDefaults [-Version <v>] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue] [-Auto]
 
 Defaults:
   Version: 1.0.39 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
   Css: disabled unless -Css is provided
   Markdown: enabled unless -NoMd is provided
-  Vue: auto-detect unless -Vue or -NoVue is provided
+  Vue: disabled unless -Vue is provided (or inferred with -Auto)
 "@
     exit 0
 }
@@ -34,6 +35,7 @@ function Install-VSCodeEslintDefaults {
         [switch]$NoMd,
         [switch]$Vue,
         [switch]$NoVue,
+        [switch]$Auto,
         [switch]$Markdown,
         [switch]$NoMarkdown
     )
@@ -47,9 +49,12 @@ function Install-VSCodeEslintDefaults {
     if ($NoMd -or $NoMarkdown) { $markdownEnabled = $false }
     elseif ($Md -or $Markdown) { $markdownEnabled = $true }
 
-    $vueMode = "auto"
+    $vueMode = "off"
     if ($NoVue) { $vueMode = "off" }
     elseif ($Vue) { $vueMode = "on" }
+    $cssExplicit = $Css -or $NoCss
+    $markdownExplicit = $Md -or $NoMd -or $Markdown -or $NoMarkdown
+    $vueExplicit = $Vue -or $NoVue
 
     $bashCmd = Get-Command bash -ErrorAction SilentlyContinue
     $curlCmd = Get-Command curl -ErrorAction SilentlyContinue
@@ -60,10 +65,10 @@ function Install-VSCodeEslintDefaults {
         $scriptUrl = "https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/v$resolvedVersion/install.sh"
         $bashArgs = @("--version=$resolvedVersion")
 
-        if ($cssEnabled) { $bashArgs += "--css" } else { $bashArgs += "--no-css" }
-        if ($markdownEnabled) { $bashArgs += "--md" } else { $bashArgs += "--no-md" }
-        if ($vueMode -eq "on") { $bashArgs += "--vue" }
-        elseif ($vueMode -eq "off") { $bashArgs += "--no-vue" }
+        if ($cssExplicit) { if ($cssEnabled) { $bashArgs += "--css" } else { $bashArgs += "--no-css" } }
+        if ($markdownExplicit) { if ($markdownEnabled) { $bashArgs += "--md" } else { $bashArgs += "--no-md" } }
+        if ($vueExplicit) { if ($vueMode -eq "on") { $bashArgs += "--vue" } else { $bashArgs += "--no-vue" } }
+        if ($Auto) { $bashArgs += "--auto" }
 
         try {
             Write-Host "Detected bash/curl/tar; using install.sh path..."
@@ -95,9 +100,13 @@ function Install-VSCodeEslintDefaults {
     $env:INSTALL_CSS = if ($cssEnabled) { "1" } else { "0" }
     $env:INSTALL_MARKDOWN = if ($markdownEnabled) { "1" } else { "0" }
     $env:INSTALL_VUE = $vueMode
+    $env:INSTALL_AUTO = if ($Auto) { "1" } else { "0" }
+    $env:INSTALL_CSS_EXPLICIT = if ($cssExplicit) { "1" } else { "0" }
+    $env:INSTALL_MARKDOWN_EXPLICIT = if ($markdownExplicit) { "1" } else { "0" }
+    $env:INSTALL_VUE_EXPLICIT = if ($vueExplicit) { "1" } else { "0" }
     node .\configure-eslint.cjs
 
-    if (-not $cssEnabled) {
+    if (-not $cssEnabled -and -not $Auto) {
         $stylelintPath = Join-Path (Get-Location) "stylelint.config.cjs"
         if (Test-Path $stylelintPath) {
             Write-Host "CSS disabled; removing stylelint.config.cjs..."
@@ -110,4 +119,4 @@ function Install-VSCodeEslintDefaults {
     Remove-Item -Force -Recurse $tmpDir -ErrorAction SilentlyContinue
 }
 
-Install-VSCodeEslintDefaults -Version $Version -Css:$Css -NoCss:$NoCss -Md:$Md -NoMd:$NoMd -Vue:$Vue -NoVue:$NoVue -Markdown:$Markdown -NoMarkdown:$NoMarkdown
+Install-VSCodeEslintDefaults -Version $Version -Css:$Css -NoCss:$NoCss -Md:$Md -NoMd:$NoMd -Vue:$Vue -NoVue:$NoVue -Auto:$Auto -Markdown:$Markdown -NoMarkdown:$NoMarkdown
