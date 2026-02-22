@@ -59,9 +59,12 @@ node configure-eslint.cjs --css --no-md --vue
 
 ## Required VSCode Plugins
 
-- Vue Official (Vue)
 - Prettier - Code Formatter (Prettier)
 - ESLint (Microsoft)
+
+### Required for Vue projects
+
+- Vue Official (Vue)
 
 ### Recommended
 

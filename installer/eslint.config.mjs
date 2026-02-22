@@ -57,7 +57,6 @@ export default [
 			'**/.nitro/**',
 			'.netlify',
 			'node_modules/.netlify',
-			'4000/.nuxt',
 			'coverage',
 			'**/*.d.ts',
 			'configure-eslint.cjs',
@@ -94,9 +93,7 @@ export default [
 			},
 			globals: {
 				RequestInit: 'readonly',
-				process: 'readonly',
-				Capacitor: 'readonly',
-				chrome: 'readonly'
+				process: 'readonly'
 			}
 		},
 		plugins: {
@@ -239,7 +236,4 @@ function isModuleNotFoundError(error) {
 
 	return typeof error.message === 'string' && error.message.includes('Cannot find module');
 }
-
-
-
 

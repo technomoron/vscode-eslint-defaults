@@ -4,8 +4,6 @@ const path = require('path');
 
 const hauntedArtifacts = ['.eslintignore', '.eslintrc.cjs', 'eslint.config.js'];
 
-const featureToggles = resolveFeatureToggles(process.argv.slice(2));
-
 const coreDependencies = [
 	'eslint@^9.39.3',
 	'prettier@^3.8.1',
@@ -46,6 +44,7 @@ const ignoredScanDirs = new Set([
 	'.nuxt'
 ]);
 
+const featureToggles = resolveFeatureToggles(process.argv.slice(2));
 const incantationScripts = buildIncantationScripts(featureToggles);
 
 function summon(command, allowFail = false) {
@@ -155,7 +154,7 @@ function purgeUnlistedDependencies(spellbook) {
 }
 
 function configureDependencyPlan(spellbook) {
-	const vueMode = featureToggles.vueMode ?? 'auto';
+	const vueMode = featureToggles.vueMode;
 	vueStackEnabled = vueMode === 'auto' ? detectVueStack(spellbook) : vueMode === 'on';
 	dependenciesToInstall = [...coreDependencies];
 
@@ -337,9 +336,9 @@ function resolveFeatureToggles(args) {
 			vueMode = 'auto';
 		}
 		console.log(
-			`Auto mode: css=${detected.cssEnabled ? 'on' : 'off'}, markdown=${
-				detected.markdownEnabled ? 'on' : 'off'
-			}, vue=auto`
+			`Auto mode: css=${cssEnabled ? 'on' : 'off'}, markdown=${
+				markdownEnabled ? 'on' : 'off'
+			}, vue=${vueExplicit ? vueMode : 'auto'}`
 		);
 	}
 
