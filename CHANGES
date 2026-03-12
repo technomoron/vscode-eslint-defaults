@@ -2,144 +2,168 @@ CHANGES
 =======
 
 v1.39 (2026-02-22)
---------------
-- Make generated script chaining package-manager agnostic via `npm-run-all`
-  (`run-s`).
-- Replace `rm -rf` in generated `cleanbuild` with cross-platform `rimraf`.
-- Bump compatible lint/tooling dependency versions (keep ESLint v9 and
-  `jsonc-eslint-parser` v2 for compatibility).
-- On Windows, prefer running `install.sh` through `bash` when `bash` + `curl` +
-  `tar` are available; fall back to PowerShell installer flow.
+------------------
+
+* Make generated script chaining package-manager agnostic via `npm-run-all`
+(`run-s`).
+* Replace `rm -rf` in generated `cleanbuild` with cross-platform `rimraf`.
+* Bump compatible lint/tooling dependency versions (keep ESLint v9 and
+`jsonc-eslint-parser` v2 for compatibility).
+* On Windows, prefer running `install.sh` through `bash` when `bash` + `curl` +
+`tar` are available; fall back to PowerShell installer flow.
 
 v1.38 (2026-02-07)
---------------
-- When Markdown is enabled (`--md`), lint `.md` files via `@eslint/markdown` and include them in lint scripts.
+------------------
+
+* When Markdown is enabled (`--md`), lint `.md` files via `@eslint/markdown` and include them in lint scripts.
 
 v1.37 (2026-02-07)
---------------
-- Bump Stylelint to 17.1.1 (installer + dev deps).
-- Drop deprecated eslint-plugin-markdown (Markdown is formatting-only).
-- Add root eslint.config.mjs and align lint scripts with installer defaults.
+------------------
+
+* Bump Stylelint to 17.1.1 (installer + dev deps).
+* Drop deprecated eslint-plugin-markdown (Markdown is formatting-only).
+* Add root eslint.config.mjs and align lint scripts with installer defaults.
 
 v1.36 (2026-02-02)
---------------
-- Ignore nested dist/node_modules and Nuxt build output directories.
+------------------
+
+* Ignore nested dist/node_modules and Nuxt build output directories.
 
 v1.35 (2026-02-02)
---------------
-- Enforce tabs with tabWidth 4 in shipped Prettier and VSCode defaults.
+------------------
+
+* Enforce tabs with tabWidth 4 in shipped Prettier and VSCode defaults.
 
 v1.34 (2026-02-02)
---------------
-- Accept --version=<v> style in install.sh.
+------------------
+
+* Accept --version=<v> style in install.sh.
 
 v1.33 (2026-02-02)
---------------
-- Bump lint/tooling dependencies to current versions.
-- Add --vue/--no-vue switch (default auto-detect) to installers and updater.
-- Update README install commands to be runnable as-is with explicit defaults.
+------------------
+
+* Bump lint/tooling dependencies to current versions.
+* Add --vue/--no-vue switch (default auto-detect) to installers and updater.
+* Update README install commands to be runnable as-is with explicit defaults.
 
 v1.32 (2025-12-31)
---------------
-- Add lintconfig updater script and script target to refresh installer config
-  later.
-- Switch installer flags to --md/--no-md and default CSS to off (unknown option
-  warning).
-- Bump ESLint/Prettier/TypeScript ESLint/Vue lint deps to current versions.
+------------------
+
+* Add lintconfig updater script and script target to refresh installer config
+later.
+* Switch installer flags to --md/--no-md and default CSS to off (unknown option
+warning).
+* Bump ESLint/Prettier/TypeScript ESLint/Vue lint deps to current versions.
 
 v1.31 (2025-12-02)
---------------
-- Add Stylelint VSCode settings and extension recommendation when CSS/SCSS
-  linting is enabled (remove them when disabled).
+------------------
+
+* Add Stylelint VSCode settings and extension recommendation when CSS/SCSS
+linting is enabled (remove them when disabled).
 
 v1.30 (2025-11-28)
---------------
-- Prefer `.prettierrc`: migrate existing `.prettierrc.json` into `.prettierrc`,
-  remove duplicates, and add defaults when none exist.
+------------------
+
+* Prefer `.prettierrc`: migrate existing `.prettierrc.json` into `.prettierrc`,
+remove duplicates, and add defaults when none exist.
 
 v1.29 (2025-11-28)
---------------
-- If only .prettierrc.json is extracted (no existing .prettierrc), keep it and
-  write defaults; if both exist, keep .prettierrc and drop the duplicate JSON.
+------------------
+
+* If only .prettierrc.json is extracted (no existing .prettierrc), keep it and
+write defaults; if both exist, keep .prettierrc and drop the duplicate JSON.
 
 v1.28 (2025-11-28)
---------------
-- Preserve existing `.prettierrc` by removing the installer's `.prettierrc.json`
-  when both are present after extraction.
+------------------
+
+* Preserve existing `.prettierrc` by removing the installer's `.prettierrc.json`
+when both are present after extraction.
 
 v1.27 (2025-11-28)
---------------
-- When both `.prettierrc` and `.prettierrc.json` exist after install, prefer
-  `.prettierrc.json` and remove the duplicate `.prettierrc`.
+------------------
+
+* When both `.prettierrc` and `.prettierrc.json` exist after install, prefer
+`.prettierrc.json` and remove the duplicate `.prettierrc`.
 
 v1.26 (2025-11-28)
---------------
-- When CSS is disabled, installers also delete any extracted
-  `stylelint.config.cjs` to keep configs clean.
+------------------
+
+* When CSS is disabled, installers also delete any extracted
+`stylelint.config.cjs` to keep configs clean.
 
 v1.25 (2025-11-28)
---------------
-- When CSS linting is disabled via flags, remove `stylelint.config.cjs` and
-  prune stylelint deps/scripts.
+------------------
+
+* When CSS linting is disabled via flags, remove `stylelint.config.cjs` and
+prune stylelint deps/scripts.
 
 v1.24 (2025-11-28)
---------------
-- Switch Markdown handling to formatting only (no ESLint code-block linting) and
-  add optional install flags via install.sh/install.ps1.
+------------------
+
+* Switch Markdown handling to formatting only (no ESLint code-block linting) and
+add optional install flags via install.sh/install.ps1.
 
 v1.23 (2025-11-27)
---------------
-- Expand default ESLint ignores to cover .netlify and .nuxt build artifacts
-  (including nested installs) and clean redundant patterns.
+------------------
+
+* Expand default ESLint ignores to cover .netlify and .nuxt build artifacts
+(including nested installs) and clean redundant patterns.
 
 v1.22 (2025-11-25)
---------------
-- Add Prettier prose wrapping defaults (80 columns) to the installer templates
-  for Markdown.
+------------------
+
+* Add Prettier prose wrapping defaults (80 columns) to the installer templates
+for Markdown.
 
 v1.21 (2025-11-25)
---------------
-- Make the installed lint scripts tolerate projects without CSS/SCSS/Markdown by
-  adding `--allow-empty-input` and `--no-error-on-unmatched-pattern`.
+------------------
+
+* Make the installed lint scripts tolerate projects without CSS/SCSS/Markdown by
+adding `--allow-empty-input` and `--no-error-on-unmatched-pattern`.
 
 v1.20 (2025-11-24)
---------------
-- Add markdown linting support and include CSS/SCSS via Stylelint in the
-  installer scripts/config (keeping dist/.output/node_modules ignored).
+------------------
+
+* Add markdown linting support and include CSS/SCSS via Stylelint in the
+installer scripts/config (keeping dist/.output/node_modules ignored).
 
 v1.19 (2025-11-11)
---------------
-- Fix `installer/eslint.config.mjs` import order so the config linting rules
-  pass without manual overrides.
+------------------
+
+* Fix `installer/eslint.config.mjs` import order so the config linting rules
+pass without manual overrides.
 
 v1.18 (2025-11-11)
---------------
-- Prevent Vue-specific lint dependencies from triggering Vue mode detection (so
-  TS-only projects drop the Vue stack again).
+------------------
+
+* Prevent Vue-specific lint dependencies from triggering Vue mode detection (so
+TS-only projects drop the Vue stack again).
 
 v1.17 (2025-11-11)
---------------
-- Installer now detects Vue/Nuxt dependencies and installs/removes the
-  framework-specific ESLint stack automatically, pruning any extra
-  eslint/prettier packages it finds.
-- ESLint config dynamically loads Vue presets only when present, scopes them to
-  `.vue` files, and drops the eslint-plugin-prettier bridge in favor of native
-  Prettier formatting plus VSCode defaults.
-- Added workspace `.vscode` settings/extensions so ESLint + Prettier work out of
-  the box after installing the recommended extensions.
+------------------
+
+* Installer now detects Vue/Nuxt dependencies and installs/removes the
+framework-specific ESLint stack automatically, pruning any extra
+eslint/prettier packages it finds.
+* ESLint config dynamically loads Vue presets only when present, scopes them to
+`.vue` files, and drops the eslint-plugin-prettier bridge in favor of native
+Prettier formatting plus VSCode defaults.
+* Added workspace `.vscode` settings/extensions so ESLint + Prettier work out of
+the box after installing the recommended extensions.
 
 v1.16 (2025-09-27)
---------------
-- Bump ESLint ecosystem to latest compatible releases (ESLint 9.36, Prettier
-  3.6, TypeScript ESLint 8.44, Vue plugins, importer resolver).
-- Add jsonc-eslint-parser and relax TypeScript lint rules so JSON/package.json
-  files lint cleanly.
-- Extend lint coverage for .cjs/.mjs files, align lint/format scripts with the
-  new extensions, and reformat configure-eslint installer script with prettier
-  compatible tabs.
-- Regenerate installer dependency list to match published versions while leaving
-  bundle creation to CI.
-- Verified installer flow in a sample project (`npm run lintfix`, `npm run
-  lint`).
-- Re-enabled `@typescript-eslint/no-explicit-any` and
-  `@typescript-eslint/no-unused-vars` as warnings.
+------------------
+
+* Bump ESLint ecosystem to latest compatible releases (ESLint 9.36, Prettier
+3.6, TypeScript ESLint 8.44, Vue plugins, importer resolver).
+* Add jsonc-eslint-parser and relax TypeScript lint rules so JSON/package.json
+files lint cleanly.
+* Extend lint coverage for .cjs/.mjs files, align lint/format scripts with the
+new extensions, and reformat configure-eslint installer script with prettier
+compatible tabs.
+* Regenerate installer dependency list to match published versions while leaving
+bundle creation to CI.
+* Verified installer flow in a sample project (`npm run lintfix`, `npm run
+lint`).
+* Re-enabled `@typescript-eslint/no-explicit-any` and
+`@typescript-eslint/no-unused-vars` as warnings.
