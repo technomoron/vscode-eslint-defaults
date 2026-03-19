@@ -11,6 +11,7 @@
 		"url": "git+ssh://git@github.com/documentmedia/vscode-eslint-defaults.git"
 	},
 	"license": "MIT",
+	"copyright": "Copyright (c) 2026 Bjørn Erik Jacobsen / Technomoron.com",
 	"author": "Technomoron",
 	"type": "javascript",
 	"engines": {

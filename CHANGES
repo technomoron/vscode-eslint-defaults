@@ -1,8 +1,26 @@
 CHANGES
 =======
 
-v1.39 (2026-02-22)
-------------------
+Version 1.0.42 (2026-03-19)
+---------------------------
+
+* Fix `.vue` parse errors when Vue support is not active by ignoring `.vue`
+files unless the Vue stack is installed.
+* Add missing package metadata fields and sync changelog version line for repo
+check compliance.
+
+Version 1.0.41 (2026-02-22)
+---------------------------
+
+* Bump bundled installer/default version references from `1.0.40` to `1.0.41`.
+
+Version 1.0.40 (2026-02-22)
+---------------------------
+
+* Bump bundled installer/default version references from `1.0.39` to `1.0.40`.
+
+Version 1.0.39 (2026-02-22)
+---------------------------
 
 * Make generated script chaining package-manager agnostic via `npm-run-all`
 (`run-s`).
@@ -12,42 +30,42 @@ v1.39 (2026-02-22)
 * On Windows, prefer running `install.sh` through `bash` when `bash` + `curl` +
 `tar` are available; fall back to PowerShell installer flow.
 
-v1.38 (2026-02-07)
-------------------
+Version 1.0.38 (2026-02-07)
+---------------------------
 
 * When Markdown is enabled (`--md`), lint `.md` files via `@eslint/markdown` and include them in lint scripts.
 
-v1.37 (2026-02-07)
-------------------
+Version 1.0.37 (2026-02-07)
+---------------------------
 
 * Bump Stylelint to 17.1.1 (installer + dev deps).
 * Drop deprecated eslint-plugin-markdown (Markdown is formatting-only).
 * Add root eslint.config.mjs and align lint scripts with installer defaults.
 
-v1.36 (2026-02-02)
-------------------
+Version 1.0.36 (2026-02-02)
+---------------------------
 
 * Ignore nested dist/node_modules and Nuxt build output directories.
 
-v1.35 (2026-02-02)
-------------------
+Version 1.0.35 (2026-02-02)
+---------------------------
 
 * Enforce tabs with tabWidth 4 in shipped Prettier and VSCode defaults.
 
-v1.34 (2026-02-02)
-------------------
+Version 1.0.34 (2026-02-02)
+---------------------------
 
 * Accept --version=<v> style in install.sh.
 
-v1.33 (2026-02-02)
-------------------
+Version 1.0.33 (2026-02-02)
+---------------------------
 
 * Bump lint/tooling dependencies to current versions.
 * Add --vue/--no-vue switch (default auto-detect) to installers and updater.
 * Update README install commands to be runnable as-is with explicit defaults.
 
-v1.32 (2025-12-31)
-------------------
+Version 1.0.32 (2025-12-31)
+---------------------------
 
 * Add lintconfig updater script and script target to refresh installer config
 later.
@@ -55,92 +73,92 @@ later.
 warning).
 * Bump ESLint/Prettier/TypeScript ESLint/Vue lint deps to current versions.
 
-v1.31 (2025-12-02)
-------------------
+Version 1.0.31 (2025-12-02)
+---------------------------
 
 * Add Stylelint VSCode settings and extension recommendation when CSS/SCSS
 linting is enabled (remove them when disabled).
 
-v1.30 (2025-11-28)
-------------------
+Version 1.0.30 (2025-11-28)
+---------------------------
 
 * Prefer `.prettierrc`: migrate existing `.prettierrc.json` into `.prettierrc`,
 remove duplicates, and add defaults when none exist.
 
-v1.29 (2025-11-28)
-------------------
+Version 1.0.29 (2025-11-28)
+---------------------------
 
 * If only .prettierrc.json is extracted (no existing .prettierrc), keep it and
 write defaults; if both exist, keep .prettierrc and drop the duplicate JSON.
 
-v1.28 (2025-11-28)
-------------------
+Version 1.0.28 (2025-11-28)
+---------------------------
 
 * Preserve existing `.prettierrc` by removing the installer's `.prettierrc.json`
 when both are present after extraction.
 
-v1.27 (2025-11-28)
-------------------
+Version 1.0.27 (2025-11-28)
+---------------------------
 
 * When both `.prettierrc` and `.prettierrc.json` exist after install, prefer
 `.prettierrc.json` and remove the duplicate `.prettierrc`.
 
-v1.26 (2025-11-28)
-------------------
+Version 1.0.26 (2025-11-28)
+---------------------------
 
 * When CSS is disabled, installers also delete any extracted
 `stylelint.config.cjs` to keep configs clean.
 
-v1.25 (2025-11-28)
-------------------
+Version 1.0.25 (2025-11-28)
+---------------------------
 
 * When CSS linting is disabled via flags, remove `stylelint.config.cjs` and
 prune stylelint deps/scripts.
 
-v1.24 (2025-11-28)
-------------------
+Version 1.0.24 (2025-11-28)
+---------------------------
 
 * Switch Markdown handling to formatting only (no ESLint code-block linting) and
 add optional install flags via install.sh/install.ps1.
 
-v1.23 (2025-11-27)
-------------------
+Version 1.0.23 (2025-11-27)
+---------------------------
 
 * Expand default ESLint ignores to cover .netlify and .nuxt build artifacts
 (including nested installs) and clean redundant patterns.
 
-v1.22 (2025-11-25)
-------------------
+Version 1.0.22 (2025-11-25)
+---------------------------
 
 * Add Prettier prose wrapping defaults (80 columns) to the installer templates
 for Markdown.
 
-v1.21 (2025-11-25)
-------------------
+Version 1.0.21 (2025-11-25)
+---------------------------
 
 * Make the installed lint scripts tolerate projects without CSS/SCSS/Markdown by
 adding `--allow-empty-input` and `--no-error-on-unmatched-pattern`.
 
-v1.20 (2025-11-24)
-------------------
+Version 1.0.20 (2025-11-24)
+---------------------------
 
 * Add markdown linting support and include CSS/SCSS via Stylelint in the
 installer scripts/config (keeping dist/.output/node_modules ignored).
 
-v1.19 (2025-11-11)
-------------------
+Version 1.0.19 (2025-11-11)
+---------------------------
 
 * Fix `installer/eslint.config.mjs` import order so the config linting rules
 pass without manual overrides.
 
-v1.18 (2025-11-11)
-------------------
+Version 1.0.18 (2025-11-11)
+---------------------------
 
 * Prevent Vue-specific lint dependencies from triggering Vue mode detection (so
 TS-only projects drop the Vue stack again).
 
-v1.17 (2025-11-11)
-------------------
+Version 1.0.17 (2025-11-11)
+---------------------------
 
 * Installer now detects Vue/Nuxt dependencies and installs/removes the
 framework-specific ESLint stack automatically, pruning any extra
@@ -151,8 +169,8 @@ Prettier formatting plus VSCode defaults.
 * Added workspace `.vscode` settings/extensions so ESLint + Prettier work out of
 the box after installing the recommended extensions.
 
-v1.16 (2025-09-27)
-------------------
+Version 1.0.16 (2025-09-27)
+---------------------------
 
 * Bump ESLint ecosystem to latest compatible releases (ESLint 9.36, Prettier
 3.6, TypeScript ESLint 8.44, Vue plugins, importer resolver).
