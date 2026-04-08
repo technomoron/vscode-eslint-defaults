@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*.*.*'  # Trigger on tags like v1.0.0
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   release:
     name: Create and upload installer packages
@@ -13,6 +16,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
 
       - name: Create .tgz and .zip archives
         run: |

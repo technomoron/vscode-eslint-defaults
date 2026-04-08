@@ -8,6 +8,8 @@ Version 1.0.42 (2026-03-19)
 files unless the Vue stack is installed.
 * Add missing package metadata fields and sync changelog version line for repo
 check compliance.
+* Update the installer release workflow to declare `actions/setup-node@v6` on
+Node 24 for repo policy compliance.
 
 Version 1.0.41 (2026-02-22)
 ---------------------------
