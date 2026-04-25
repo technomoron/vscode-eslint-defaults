@@ -258,6 +258,40 @@ function buildIncantationScripts({
 		prettierExtensions.push('md');
 	}
 
+	const lintconfigArgs = getLintconfigArgs({
+		cssEnabled,
+		markdownEnabled,
+		vueMode,
+		autoMode,
+		cssExplicit,
+		markdownExplicit,
+		vueExplicit
+	});
+
+	return {
+		lint: `${eslintCmd}${stylelintCmd}`,
+		lintfix: `${eslintFixCmd}${stylelintFixCmd}`,
+		pretty: `prettier --write "**/*.{${prettierExtensions.join(',')}}"`,
+		format: 'run-s lintfix pretty',
+		cleanbuild: 'rimraf dist && run-s format build',
+		lintconfig: `node lintconfig.cjs ${lintconfigArgs.join(' ')}`
+	};
+}
+
+function getLintconfigArgs({
+	cssEnabled,
+	markdownEnabled,
+	vueMode,
+	autoMode,
+	cssExplicit,
+	markdownExplicit,
+	vueExplicit
+}) {
+	const installArgs = process.env.INSTALL_LINTCONFIG_ARGS?.trim();
+	if (installArgs) {
+		return installArgs.split(/\s+/);
+	}
+
 	const lintconfigArgs = [];
 	if (autoMode) {
 		lintconfigArgs.push('--auto');
@@ -276,14 +310,7 @@ function buildIncantationScripts({
 		lintconfigArgs.push(vueMode === 'on' ? '--vue' : '--no-vue');
 	}
 
-	return {
-		lint: `${eslintCmd}${stylelintCmd}`,
-		lintfix: `${eslintFixCmd}${stylelintFixCmd}`,
-		pretty: `prettier --write "**/*.{${prettierExtensions.join(',')}}"`,
-		format: 'run-s lintfix pretty',
-		cleanbuild: 'rimraf dist && run-s format build',
-		lintconfig: `node lintconfig.cjs ${lintconfigArgs.join(' ')}`
-	};
+	return lintconfigArgs;
 }
 
 function resolveFeatureToggles(args) {

@@ -81,6 +81,48 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
+LINTCONFIG_ARGS=()
+if [[ "$AUTO_MODE" -eq 1 ]]; then
+	LINTCONFIG_ARGS+=(--auto)
+	if [[ "$CSS_EXPLICIT" -eq 1 ]]; then
+		if [[ "$CSS_ENABLED" -eq 1 ]]; then
+			LINTCONFIG_ARGS+=(--css)
+		else
+			LINTCONFIG_ARGS+=(--no-css)
+		fi
+	fi
+	if [[ "$MARKDOWN_EXPLICIT" -eq 1 ]]; then
+		if [[ "$MARKDOWN_ENABLED" -eq 1 ]]; then
+			LINTCONFIG_ARGS+=(--md)
+		else
+			LINTCONFIG_ARGS+=(--no-md)
+		fi
+	fi
+	if [[ "$VUE_EXPLICIT" -eq 1 ]]; then
+		if [[ "$VUE_MODE" == "on" ]]; then
+			LINTCONFIG_ARGS+=(--vue)
+		else
+			LINTCONFIG_ARGS+=(--no-vue)
+		fi
+	fi
+else
+	if [[ "$CSS_ENABLED" -eq 1 ]]; then
+		LINTCONFIG_ARGS+=(--css)
+	else
+		LINTCONFIG_ARGS+=(--no-css)
+	fi
+	if [[ "$MARKDOWN_ENABLED" -eq 1 ]]; then
+		LINTCONFIG_ARGS+=(--md)
+	else
+		LINTCONFIG_ARGS+=(--no-md)
+	fi
+	if [[ "$VUE_MODE" == "on" ]]; then
+		LINTCONFIG_ARGS+=(--vue)
+	else
+		LINTCONFIG_ARGS+=(--no-vue)
+	fi
+fi
+
 case "$(uname -s 2>/dev/null || true)" in
 	MINGW*|MSYS*|CYGWIN*)
 		PS_CMD="$(command -v powershell.exe || command -v pwsh.exe || true)"
@@ -98,6 +140,7 @@ case "$(uname -s 2>/dev/null || true)" in
 			INSTALL_CSS_EXPLICIT="$CSS_EXPLICIT" \
 			INSTALL_MARKDOWN_EXPLICIT="$MARKDOWN_EXPLICIT" \
 			INSTALL_VUE_EXPLICIT="$VUE_EXPLICIT" \
+			INSTALL_LINTCONFIG_ARGS="${LINTCONFIG_ARGS[*]}" \
 			"$PS_CMD" -NoProfile -ExecutionPolicy Bypass -Command '
 $ErrorActionPreference = "Stop"
 $resolvedVersion = $env:VSCODE_ESLINT_DEFAULTS_INSTALL_VERSION
@@ -166,7 +209,7 @@ echo "Extracting installer files..."
 tar -xzf "$ARCHIVE_PATH" -C "$PWD"
 
 echo "Running configure-eslint.cjs..."
-INSTALL_CSS="$CSS_ENABLED" INSTALL_MARKDOWN="$MARKDOWN_ENABLED" INSTALL_VUE="$VUE_MODE" INSTALL_AUTO="$AUTO_MODE" INSTALL_CSS_EXPLICIT="$CSS_EXPLICIT" INSTALL_MARKDOWN_EXPLICIT="$MARKDOWN_EXPLICIT" INSTALL_VUE_EXPLICIT="$VUE_EXPLICIT" node configure-eslint.cjs
+INSTALL_CSS="$CSS_ENABLED" INSTALL_MARKDOWN="$MARKDOWN_ENABLED" INSTALL_VUE="$VUE_MODE" INSTALL_AUTO="$AUTO_MODE" INSTALL_CSS_EXPLICIT="$CSS_EXPLICIT" INSTALL_MARKDOWN_EXPLICIT="$MARKDOWN_EXPLICIT" INSTALL_VUE_EXPLICIT="$VUE_EXPLICIT" INSTALL_LINTCONFIG_ARGS="${LINTCONFIG_ARGS[*]}" node configure-eslint.cjs
 
 if [[ "$CSS_ENABLED" -eq 0 ]] && [[ "$AUTO_MODE" -eq 0 ]] && [[ -f "stylelint.config.cjs" ]]; then
 	echo "CSS disabled; removing stylelint.config.cjs..."

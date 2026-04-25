@@ -16,6 +16,8 @@ Bash/MSYS/Cygwin on Windows.
 `-Latest` to override pinned environment configuration.
 * Avoid assigning to PowerShell's read-only `$IsWindows` automatic variable in
 PowerShell 7.
+* Make generated `lintconfig` scripts retain the install-time config flags
+while still updating from the latest installer archive.
 
 Version 1.0.42 (2026-03-19)
 ---------------------------

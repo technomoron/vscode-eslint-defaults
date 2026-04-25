@@ -60,6 +60,32 @@ function Get-VSCodeEslintDefaultsArchiveUrl {
     return "https://github.com/technomoron/vscode-eslint-defaults/releases/download/v$Version/installer.tgz"
 }
 
+function Get-VSCodeEslintDefaultsLintconfigArgs {
+    param(
+        [bool]$CssEnabled,
+        [bool]$MarkdownEnabled,
+        [string]$VueMode,
+        [bool]$AutoMode,
+        [bool]$CssExplicit,
+        [bool]$MarkdownExplicit,
+        [bool]$VueExplicit
+    )
+
+    $args = @()
+    if ($AutoMode) {
+        $args += "--auto"
+        if ($CssExplicit) { $args += if ($CssEnabled) { "--css" } else { "--no-css" } }
+        if ($MarkdownExplicit) { $args += if ($MarkdownEnabled) { "--md" } else { "--no-md" } }
+        if ($VueExplicit) { $args += if ($VueMode -eq "on") { "--vue" } else { "--no-vue" } }
+    } else {
+        $args += if ($CssEnabled) { "--css" } else { "--no-css" }
+        $args += if ($MarkdownEnabled) { "--md" } else { "--no-md" }
+        $args += if ($VueMode -eq "on") { "--vue" } else { "--no-vue" }
+    }
+
+    return $args -join " "
+}
+
 function Install-VSCodeEslintDefaults {
     param(
         [string]$Version = "latest",
@@ -90,6 +116,7 @@ function Install-VSCodeEslintDefaults {
     $cssExplicit = $Css -or $NoCss
     $markdownExplicit = $Md -or $NoMd -or $Markdown -or $NoMarkdown
     $vueExplicit = $Vue -or $NoVue
+    $lintconfigArgs = Get-VSCodeEslintDefaultsLintconfigArgs -CssEnabled $cssEnabled -MarkdownEnabled $markdownEnabled -VueMode $vueMode -AutoMode $Auto -CssExplicit $cssExplicit -MarkdownExplicit $markdownExplicit -VueExplicit $vueExplicit
     $runningOnWindows = $env:OS -eq "Windows_NT"
 
     if (-not $runningOnWindows -and $resolvedVersion -ne "latest") {
@@ -158,6 +185,7 @@ function Install-VSCodeEslintDefaults {
     $env:INSTALL_CSS_EXPLICIT = if ($cssExplicit) { "1" } else { "0" }
     $env:INSTALL_MARKDOWN_EXPLICIT = if ($markdownExplicit) { "1" } else { "0" }
     $env:INSTALL_VUE_EXPLICIT = if ($vueExplicit) { "1" } else { "0" }
+    $env:INSTALL_LINTCONFIG_ARGS = $lintconfigArgs
     node .\configure-eslint.cjs
 
     if (-not $cssEnabled -and -not $Auto) {
