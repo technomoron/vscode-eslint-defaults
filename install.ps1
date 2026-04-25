@@ -90,9 +90,9 @@ function Install-VSCodeEslintDefaults {
     $cssExplicit = $Css -or $NoCss
     $markdownExplicit = $Md -or $NoMd -or $Markdown -or $NoMarkdown
     $vueExplicit = $Vue -or $NoVue
-    $isWindows = $env:OS -eq "Windows_NT"
+    $runningOnWindows = $env:OS -eq "Windows_NT"
 
-    if (-not $isWindows -and $resolvedVersion -ne "latest") {
+    if (-not $runningOnWindows -and $resolvedVersion -ne "latest") {
         $bashCmd = Get-Command bash -ErrorAction SilentlyContinue
         $curlCmd = Get-Command curl -ErrorAction SilentlyContinue
         $tarCmd = Get-Command tar -ErrorAction SilentlyContinue
@@ -132,7 +132,7 @@ function Install-VSCodeEslintDefaults {
     Invoke-WebRequest -Uri $archiveUrl -OutFile $archivePath -UseBasicParsing
 
     Write-Host "Extracting installer files..."
-    if ($isWindows) {
+    if ($runningOnWindows) {
         $tarCandidates = @(
             (Join-Path $env:SystemRoot "System32\tar.exe"),
             (Join-Path $env:SystemRoot "Sysnative\tar.exe")
