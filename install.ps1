@@ -1,5 +1,6 @@
 param(
-    [string]$Version = "1.0.42",
+    [string]$Version = "latest",
+    [switch]$Latest,
     [switch]$Css,
     [switch]$NoCss,
     [switch]$Md,
@@ -15,10 +16,10 @@ param(
 if ($Help) {
     Write-Host @"
 Usage:
-  Install-VSCodeEslintDefaults [-Version <v>] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue] [-Auto]
+  Install-VSCodeEslintDefaults [-Version <v> | -Latest] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue] [-Auto]
 
 Defaults:
-  Version: 1.0.42 (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
+  Version: latest GitHub release (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
   Css: disabled unless -Css is provided
   Markdown: enabled unless -NoMd is provided
   Vue: disabled unless -Vue is provided (or inferred with -Auto)
@@ -26,9 +27,43 @@ Defaults:
     exit 0
 }
 
+function Resolve-VSCodeEslintDefaultsVersion {
+    param(
+        [string]$Version,
+        [switch]$Latest
+    )
+
+    $resolvedVersion = if ($Latest) {
+        "latest"
+    } elseif ($env:VSCODE_ESLINT_DEFAULTS_VERSION) {
+        $env:VSCODE_ESLINT_DEFAULTS_VERSION
+    } else {
+        $Version
+    }
+
+    if ($resolvedVersion -eq "latest") {
+        return "latest"
+    }
+
+    return $resolvedVersion.TrimStart("v")
+}
+
+function Get-VSCodeEslintDefaultsArchiveUrl {
+    param(
+        [string]$Version
+    )
+
+    if ($Version -eq "latest") {
+        return "https://github.com/technomoron/vscode-eslint-defaults/releases/latest/download/installer.tgz"
+    }
+
+    return "https://github.com/technomoron/vscode-eslint-defaults/releases/download/v$Version/installer.tgz"
+}
+
 function Install-VSCodeEslintDefaults {
     param(
-        [string]$Version = "1.0.42",
+        [string]$Version = "latest",
+        [switch]$Latest,
         [switch]$Css,
         [switch]$NoCss,
         [switch]$Md,
@@ -40,7 +75,7 @@ function Install-VSCodeEslintDefaults {
         [switch]$NoMarkdown
     )
 
-    $resolvedVersion = if ($env:VSCODE_ESLINT_DEFAULTS_VERSION) { $env:VSCODE_ESLINT_DEFAULTS_VERSION } else { $Version }
+    $resolvedVersion = Resolve-VSCodeEslintDefaultsVersion -Version $Version -Latest:$Latest
     $cssEnabled = $false
     if ($NoCss) { $cssEnabled = $false }
     elseif ($Css) { $cssEnabled = $true }
@@ -55,46 +90,65 @@ function Install-VSCodeEslintDefaults {
     $cssExplicit = $Css -or $NoCss
     $markdownExplicit = $Md -or $NoMd -or $Markdown -or $NoMarkdown
     $vueExplicit = $Vue -or $NoVue
+    $isWindows = $env:OS -eq "Windows_NT"
 
-    $bashCmd = Get-Command bash -ErrorAction SilentlyContinue
-    $curlCmd = Get-Command curl -ErrorAction SilentlyContinue
-    $tarCmd = Get-Command tar -ErrorAction SilentlyContinue
+    if (-not $isWindows -and $resolvedVersion -ne "latest") {
+        $bashCmd = Get-Command bash -ErrorAction SilentlyContinue
+        $curlCmd = Get-Command curl -ErrorAction SilentlyContinue
+        $tarCmd = Get-Command tar -ErrorAction SilentlyContinue
 
-    if ($bashCmd -and $curlCmd -and $tarCmd) {
-        $tmpInstallSh = Join-Path $env:TEMP ("vscode-eslint-defaults-install-{0}.sh" -f [System.Guid]::NewGuid().ToString("N"))
-        $scriptUrl = "https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/v$resolvedVersion/install.sh"
-        $bashArgs = @("--version=$resolvedVersion")
+        if ($bashCmd -and $curlCmd -and $tarCmd) {
+            $tmpInstallSh = Join-Path ([System.IO.Path]::GetTempPath()) ("vscode-eslint-defaults-install-{0}.sh" -f [System.Guid]::NewGuid().ToString("N"))
+            $scriptUrl = "https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/v$resolvedVersion/install.sh"
+            $bashArgs = @("--version=$resolvedVersion")
 
-        if ($cssExplicit) { if ($cssEnabled) { $bashArgs += "--css" } else { $bashArgs += "--no-css" } }
-        if ($markdownExplicit) { if ($markdownEnabled) { $bashArgs += "--md" } else { $bashArgs += "--no-md" } }
-        if ($vueExplicit) { if ($vueMode -eq "on") { $bashArgs += "--vue" } else { $bashArgs += "--no-vue" } }
-        if ($Auto) { $bashArgs += "--auto" }
+            if ($cssExplicit) { if ($cssEnabled) { $bashArgs += "--css" } else { $bashArgs += "--no-css" } }
+            if ($markdownExplicit) { if ($markdownEnabled) { $bashArgs += "--md" } else { $bashArgs += "--no-md" } }
+            if ($vueExplicit) { if ($vueMode -eq "on") { $bashArgs += "--vue" } else { $bashArgs += "--no-vue" } }
+            if ($Auto) { $bashArgs += "--auto" }
 
-        try {
-            Write-Host "Detected bash/curl/tar; using install.sh path..."
-            Invoke-WebRequest -Uri $scriptUrl -OutFile $tmpInstallSh -UseBasicParsing
-            & $bashCmd.Source $tmpInstallSh @bashArgs
-            if ($LASTEXITCODE -eq 0) {
-                return
+            try {
+                Write-Host "Detected bash/curl/tar; using install.sh path..."
+                Invoke-WebRequest -Uri $scriptUrl -OutFile $tmpInstallSh -UseBasicParsing
+                & $bashCmd.Source $tmpInstallSh @bashArgs
+                if ($LASTEXITCODE -eq 0) {
+                    return
+                }
+                Write-Warning "bash installer exited with code $LASTEXITCODE; falling back to PowerShell installer."
+            } catch {
+                Write-Warning "bash installer path failed ($($_.Exception.Message)); falling back to PowerShell installer."
+            } finally {
+                Remove-Item -Force $tmpInstallSh -ErrorAction SilentlyContinue
             }
-            Write-Warning "bash installer exited with code $LASTEXITCODE; falling back to PowerShell installer."
-        } catch {
-            Write-Warning "bash installer path failed ($($_.Exception.Message)); falling back to PowerShell installer."
-        } finally {
-            Remove-Item -Force $tmpInstallSh -ErrorAction SilentlyContinue
         }
     }
 
-    $archiveUrl = "https://github.com/technomoron/vscode-eslint-defaults/releases/download/v$resolvedVersion/installer.tgz"
+    $archiveUrl = Get-VSCodeEslintDefaultsArchiveUrl -Version $resolvedVersion
     $tmpDir = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
     New-Item -ItemType Directory -Path $tmpDir | Out-Null
     $archivePath = Join-Path $tmpDir "installer.tgz"
 
-    Write-Host "Downloading installer v$resolvedVersion..."
+    Write-Host "Downloading installer $resolvedVersion..."
     Invoke-WebRequest -Uri $archiveUrl -OutFile $archivePath -UseBasicParsing
 
     Write-Host "Extracting installer files..."
-    tar -xvzf $archivePath -C (Get-Location)
+    if ($isWindows) {
+        $tarCandidates = @(
+            (Join-Path $env:SystemRoot "System32\tar.exe"),
+            (Join-Path $env:SystemRoot "Sysnative\tar.exe")
+        )
+        $tarPath = $tarCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+        if (-not $tarPath) {
+            throw "Windows tar.exe not found under $env:SystemRoot."
+        }
+        & $tarPath -xzf $archivePath -C (Get-Location)
+    } else {
+        tar -xzf $archivePath -C (Get-Location)
+    }
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to extract installer archive."
+    }
 
     Write-Host "Running configure-eslint.cjs..."
     $env:INSTALL_CSS = if ($cssEnabled) { "1" } else { "0" }
@@ -119,4 +173,6 @@ function Install-VSCodeEslintDefaults {
     Remove-Item -Force -Recurse $tmpDir -ErrorAction SilentlyContinue
 }
 
-Install-VSCodeEslintDefaults -Version $Version -Css:$Css -NoCss:$NoCss -Md:$Md -NoMd:$NoMd -Vue:$Vue -NoVue:$NoVue -Auto:$Auto -Markdown:$Markdown -NoMarkdown:$NoMarkdown
+if ($MyInvocation.MyCommand.Path -and $MyInvocation.InvocationName -ne ".") {
+    Install-VSCodeEslintDefaults -Version $Version -Latest:$Latest -Css:$Css -NoCss:$NoCss -Md:$Md -NoMd:$NoMd -Vue:$Vue -NoVue:$NoVue -Auto:$Auto -Markdown:$Markdown -NoMarkdown:$NoMarkdown
+}

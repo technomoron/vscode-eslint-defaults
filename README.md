@@ -7,14 +7,18 @@ Default config for VSCode, ESLint and prettier, both for editor and command line
 Unix/Linux/FreeBSD/MacOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --auto --version=1.0.42
+curl -fsSL https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.sh | bash -s -- --auto
 ```
 
-Windows with Power Shell:
+Windows with PowerShell:
 
 ```powershell
-iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Version 1.0.42 -Auto
+iwr https://raw.githubusercontent.com/technomoron/vscode-eslint-defaults/master/install.ps1 -UseBasicParsing | iex; Install-VSCodeEslintDefaults -Auto
 ```
+
+On Windows, use the PowerShell command even if Git Bash is installed. The
+PowerShell installer uses `Invoke-WebRequest` and Windows' built-in `tar.exe`
+instead of PATH-resolved Unix tools.
 
 Flags:
 - Default install behavior is no CSS, Markdown on, Vue off; use `--auto` / `-Auto` to detect from project files/dependencies.
@@ -22,7 +26,7 @@ Flags:
 - Enable Markdown linting/formatting with `--md` or `-Md`.
 - Force the Vue lint stack on with `--vue` or `-Vue`.
 - Auto-detect CSS/Markdown usage and Vue dependencies with `--auto` or `-Auto`.
-- Override the release with `--version=1.0.42` / `-Version 1.0.42` (defaults to 1.0.42 or `$VSCODE_ESLINT_DEFAULTS_VERSION`).
+- Installers default to the latest GitHub release. Pin a release with `--version=1.0.42` / `-Version 1.0.42`, or force latest with `--latest` / `-Latest`.
 
 The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
 

@@ -1,6 +1,20 @@
 CHANGES
 =======
 
+Unreleased
+----------
+
+* Make the Windows PowerShell installer stay on the native PowerShell path even
+when Git Bash, curl, or tar are present on PATH.
+* Use Windows' built-in `tar.exe` explicitly from PowerShell and generated
+`lintconfig.cjs` updater paths.
+* Avoid double-running the PowerShell installer when it is loaded via
+`Invoke-WebRequest ... | Invoke-Expression`.
+* Delegate `install.sh` to the PowerShell installer when it is run from Git
+Bash/MSYS/Cygwin on Windows.
+* Default installers to the latest GitHub release and add `--latest` /
+`-Latest` to override pinned environment configuration.
+
 Version 1.0.42 (2026-03-19)
 ---------------------------
 

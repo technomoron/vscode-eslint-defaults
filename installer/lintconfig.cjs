@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { execSync, spawnSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -37,6 +37,39 @@ async function download_asset(url, destination) {
 	fs.writeFileSync(destination, buffer);
 }
 
+function get_tar_command() {
+	if (process.platform !== 'win32') {
+		return 'tar';
+	}
+
+	const system_root = process.env.SystemRoot || 'C:\\Windows';
+	const candidates = [
+		path.join(system_root, 'System32', 'tar.exe'),
+		path.join(system_root, 'Sysnative', 'tar.exe')
+	];
+
+	const tar_path = candidates.find((candidate) => fs.existsSync(candidate));
+	if (!tar_path) {
+		throw new Error(`Windows tar.exe not found under ${system_root}.`);
+	}
+
+	return tar_path;
+}
+
+function extract_archive(tgz_path) {
+	const result = spawnSync(get_tar_command(), ['-xzf', tgz_path, '-C', process.cwd()], {
+		stdio: 'inherit'
+	});
+
+	if (result.error) {
+		throw result.error;
+	}
+
+	if (result.status !== 0) {
+		throw new Error(`Failed to extract ${INSTALLER_ASSET_NAME}.`);
+	}
+}
+
 async function run() {
 	const release = await fetch_json(RELEASE_API_URL);
 	const assets = Array.isArray(release.assets) ? release.assets : [];
@@ -53,7 +86,7 @@ async function run() {
 
 	try {
 		await download_asset(asset.browser_download_url, tgz_path);
-		execSync(`tar -xzf "${tgz_path}" -C "${process.cwd()}"`, { stdio: 'inherit' });
+		extract_archive(tgz_path);
 
 		const configure_path = path.join(process.cwd(), 'configure-eslint.cjs');
 		if (!fs.existsSync(configure_path)) {
