@@ -4,6 +4,11 @@ CHANGES
 Unreleased
 ----------
 
+* Migrate import ordering from `eslint-plugin-import` to `eslint-plugin-import-x`
+for ESLint 10 compatibility.
+* Bump the bundled ESLint default to ESLint 10.
+* Fix the README command usage block so the generated scripts can be copied as
+shell commands.
 * Make the Windows PowerShell installer stay on the native PowerShell path even
 when Git Bash, curl, or tar are present on PATH.
 * Use Windows' built-in `tar.exe` explicitly from PowerShell and generated

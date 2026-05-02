@@ -5,18 +5,18 @@ const path = require('path');
 const hauntedArtifacts = ['.eslintignore', '.eslintrc.cjs', 'eslint.config.js'];
 
 const coreDependencies = [
-	'eslint@^9.39.3',
+	'eslint@^10.3.0',
 	'prettier@^3.8.1',
 	'npm-run-all@^4.1.5',
 	'rimraf@^6.1.3',
 	'eslint-config-prettier@^10.1.8',
-	'jsonc-eslint-parser@^2.4.2',
+	'jsonc-eslint-parser@^3.1.0',
 	'@typescript-eslint/eslint-plugin@^8.56.0',
 	'@typescript-eslint/parser@^8.56.0',
-	'eslint-plugin-import@^2.32.0'
+	'eslint-plugin-import-x@^4.16.2'
 ];
 
-const markdownDependencies = ['@eslint/markdown@^7.5.1'];
+const markdownDependencies = ['@eslint/markdown@^8.0.1'];
 const cssDependencies = ['stylelint@^17.3.0', 'stylelint-config-standard-scss@^17.0.0'];
 const vueDependencies = [
 	'eslint-plugin-vue@^10.8.0',
@@ -546,7 +546,7 @@ function configureVsCodeSettings(cssEnabled) {
 	let settings;
 	try {
 		settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-	} catch (error) {
+	} catch {
 		console.warn(`Could not parse ${settingsPath}; skipping VSCode settings update.`);
 		return;
 	}
@@ -600,7 +600,7 @@ function configureVsCodeExtensions(cssEnabled) {
 	let payload;
 	try {
 		payload = JSON.parse(fs.readFileSync(extensionsPath, 'utf8'));
-	} catch (error) {
+	} catch {
 		console.warn(`Could not parse ${extensionsPath}; skipping VSCode extensions update.`);
 		return;
 	}

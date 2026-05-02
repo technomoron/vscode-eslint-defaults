@@ -1,8 +1,8 @@
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
-import pluginImport from 'eslint-plugin-import';
-import jsoncParser from 'jsonc-eslint-parser';
+import pluginImportX from 'eslint-plugin-import-x';
+import * as jsoncParser from 'jsonc-eslint-parser';
 const TS_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,vue}'];
 const TS_PLUGIN_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,js,mjs,cjs,vue}'];
 const VUE_FILE_GLOBS = ['**/*.vue'];
@@ -97,10 +97,10 @@ export default [
 			}
 		},
 		plugins: {
-			import: pluginImport
+			'import-x': pluginImportX
 		},
 		rules: {
-			'import/order': [
+			'import-x/order': [
 				'error',
 				{
 					groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
@@ -168,7 +168,11 @@ async function loadMarkdownSupport() {
 				...recommended,
 				{
 					files: ['**/*.md'],
-					language: 'markdown/gfm'
+					language: 'markdown/gfm',
+					rules: {
+						'markdown/fenced-code-language': 'off',
+						'markdown/no-missing-label-refs': 'off'
+					}
 				}
 			]
 		};
@@ -236,4 +240,3 @@ function isModuleNotFoundError(error) {
 
 	return typeof error.message === 'string' && error.message.includes('Cannot find module');
 }
-

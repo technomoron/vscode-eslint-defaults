@@ -26,7 +26,7 @@ Flags:
 - Enable Markdown linting/formatting with `--md` or `-Md`.
 - Force the Vue lint stack on with `--vue` or `-Vue`.
 - Auto-detect CSS/Markdown usage and Vue dependencies with `--auto` or `-Auto`.
-- Installers default to the latest GitHub release. Pin a release with `--version=1.0.42` / `-Version 1.0.42`, or force latest with `--latest` / `-Latest`.
+- Installers default to the latest GitHub release. Pin a release with `--version=1.0.43` / `-Version 1.0.43`, or force latest with `--latest` / `-Latest`.
 
 The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
 
@@ -55,12 +55,12 @@ node configure-eslint.cjs --css --no-md --vue
 ### Command Usage
 
 ```bash
-`npm run lint` - Shows errors but is non-destructive
-`npm run lintfix` - Fixes errors and warnings that eslint can sort out itself
-`npm run pretty` - Formats files using prettier and `.prettierrc` settings
-`npm run format` - Runs lintfix and prettier via `npm-run-all` (`run-s`)
-`npm run cleanbuild` - Cleans dist via `rimraf`, then runs format and build via `npm-run-all` (`run-s`)
-`npm run lintconfig` - Downloads the latest installer and refreshes lint config
+npm run lint        # Shows errors but is non-destructive
+npm run lintfix     # Fixes errors and warnings that eslint can sort out itself
+npm run pretty      # Formats files using prettier and .prettierrc settings
+npm run format      # Runs lintfix and pretty via npm-run-all (run-s)
+npm run cleanbuild  # Cleans dist via rimraf, then runs format and build via npm-run-all (run-s)
+npm run lintconfig  # Downloads the latest installer and refreshes lint config
 ```
 
 ## Required VSCode Plugins

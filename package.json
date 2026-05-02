@@ -1,6 +1,6 @@
 {
 	"name": "@technomoron/vscode-eslint-defaults",
-	"version": "1.0.42",
+	"version": "1.0.43",
 	"description": "Default editor config and eslint config for js/ts/vue",
 	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
 	"bugs": {
@@ -26,15 +26,15 @@
 		"lintconfig": "node installer/lintconfig.cjs"
 	},
 	"devDependencies": {
-		"@eslint/markdown": "^7.5.1",
+		"@eslint/markdown": "^8.0.1",
 		"@typescript-eslint/eslint-plugin": "^8.56.0",
 		"@typescript-eslint/parser": "^8.56.0",
 		"@vue/eslint-config-typescript": "^14.7.0",
-		"eslint": "^9.39.3",
+		"eslint": "^10.3.0",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-import": "^2.32.0",
+		"eslint-plugin-import-x": "^4.16.2",
 		"eslint-plugin-vue": "^10.8.0",
-		"jsonc-eslint-parser": "^2.4.2",
+		"jsonc-eslint-parser": "^3.1.0",
 		"prettier": "^3.8.1",
 		"stylelint": "^17.3.0",
 		"stylelint-config-standard-scss": "^17.0.0",
