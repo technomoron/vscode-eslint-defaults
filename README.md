@@ -26,7 +26,8 @@ Flags:
 - Enable Markdown linting/formatting with `--md` or `-Md`.
 - Force the Vue lint stack on with `--vue` or `-Vue`.
 - Auto-detect CSS/Markdown usage and Vue dependencies with `--auto` or `-Auto`.
-- Installers default to the latest GitHub release. Pin a release with `--version=1.0.43` / `-Version 1.0.43`, or force latest with `--latest` / `-Latest`.
+- Update eligible pnpm workspace package scripts with `--recursive` / `-r` or `-Recursive`.
+- Installers default to the latest GitHub release. Pin a release with `--version=1.0.44` / `-Version 1.0.44`, or force latest with `--latest` / `-Latest`.
 
 The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
 
@@ -44,7 +45,14 @@ These flags also work with `node configure-eslint.cjs` and `npm run lintconfig -
 With `--auto`, CSS/Markdown are detected from files and Vue from dependencies (explicit flags still win).
 When you run the installer/configure step, the generated `lintconfig` script is updated with the selected CSS/Markdown/Vue flags so future updates reuse them. The updater always downloads the latest installer archive.
 
-In a monorepo, Vue detection only reads the root `package.json` and will not find Vue declared in sub-packages. Use `--vue` / `-Vue` explicitly in that case.
+Use `--recursive` in pnpm workspaces to update scripts for workspace packages
+that look like real npm package targets. The installer uses pnpm's workspace
+package list, skips arbitrary nested `package.json` files, and keeps shared
+ESLint/Prettier/Stylelint configs in the workspace root.
+
+In a monorepo, Vue detection reads workspace package dependencies only when
+`--recursive` is used. Without it, use `--vue` / `-Vue` explicitly when Vue is
+declared only in a child package.
 
 Example:
 

@@ -27,6 +27,18 @@ const vueDependencies = [
 const banishedDependencies = ['eslint', 'tslint'];
 const lintSections = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
 const lintTokens = ['eslint', 'prettier', 'stylelint'];
+const recursivePackageScriptSignals = [
+	'build',
+	'cleanbuild',
+	'dev',
+	'start',
+	'test',
+	'typecheck',
+	'lint',
+	'lintfix',
+	'format',
+	'pretty'
+];
 const purgedDependencyNames = new Set();
 const cataloguedLintDependencies = new Set(
 	stripVersions([...coreDependencies, ...markdownDependencies, ...cssDependencies, ...vueDependencies])
@@ -45,6 +57,9 @@ const ignoredScanDirs = new Set([
 ]);
 
 const featureToggles = resolveFeatureToggles(process.argv.slice(2));
+const workspacePackageTargets = featureToggles.recursive
+	? discoverRecursiveWorkspacePackages(process.cwd())
+	: [];
 const incantationScripts = buildIncantationScripts(featureToggles);
 
 function summon(command, allowFail = false) {
@@ -97,6 +112,38 @@ function inscribePackageScroll() {
 	console.log('package.json updated.');
 }
 
+function inscribeWorkspacePackageScrolls() {
+	if (!featureToggles.recursive) {
+		return;
+	}
+
+	if (workspacePackageTargets.length === 0) {
+		console.log('No eligible pnpm workspace packages found for recursive script updates.');
+		return;
+	}
+
+	workspacePackageTargets.forEach(({ packagePath, spellbook }) => {
+		spellbook.scripts ||= {};
+		purgeUnlistedDependencies(spellbook, {
+			trackRemovals: false,
+			removeCataloguedDependencies: true
+		});
+
+		for (const [rune, incantation] of Object.entries(incantationScripts)) {
+			if (rune === 'lintconfig') {
+				continue;
+			}
+			if (spellbook.scripts[rune]) {
+				console.warn(`Script "${rune}" already exists in ${packagePath}; replacing.`);
+			}
+			spellbook.scripts[rune] = incantation;
+		}
+
+		fs.writeFileSync(packagePath, JSON.stringify(spellbook, null, 2) + '\n');
+		console.log(`Updated workspace package ${path.relative(process.cwd(), path.dirname(packagePath))}.`);
+	});
+}
+
 function brewDependencies() {
 	const hasPnpm = (() => {
 		try {
@@ -111,10 +158,11 @@ function brewDependencies() {
 
 	if (hasPnpm) {
 		console.log('Using pnpm to install lint dependencies...');
+		const workspaceFlag = featureToggles.recursive ? '-w ' : '';
 		if (removalTargets.length) {
-			summon(`pnpm remove ${removalTargets.join(' ')}`, true);
+			summon(`pnpm remove ${workspaceFlag}${removalTargets.join(' ')}`, true);
 		}
-		summon(`pnpm add -D ${dependenciesToInstall.join(' ')}`);
+		summon(`pnpm add -D ${workspaceFlag}${dependenciesToInstall.join(' ')}`);
 	} else {
 		console.log('Using npm to install lint dependencies...');
 		if (removalTargets.length) {
@@ -126,7 +174,10 @@ function brewDependencies() {
 	console.log('Lint dependencies installed.');
 }
 
-function purgeUnlistedDependencies(spellbook) {
+function purgeUnlistedDependencies(
+	spellbook,
+	{ trackRemovals = true, removeCataloguedDependencies = false } = {}
+) {
 	const removed = [];
 
 	lintSections.forEach((section) => {
@@ -136,7 +187,7 @@ function purgeUnlistedDependencies(spellbook) {
 		}
 
 		Object.keys(shelf).forEach((depName) => {
-			if (shouldPurgeDependency(depName)) {
+			if (shouldPurgeDependency(depName, { removeCataloguedDependencies })) {
 				removed.push(depName);
 				delete shelf[depName];
 			}
@@ -148,14 +199,17 @@ function purgeUnlistedDependencies(spellbook) {
 	});
 
 	if (removed.length) {
-		removed.forEach((name) => purgedDependencyNames.add(name));
+		if (trackRemovals) {
+			removed.forEach((name) => purgedDependencyNames.add(name));
+		}
 		console.log(`Purged stray lint deps: ${removed.join(', ')}`);
 	}
 }
 
 function configureDependencyPlan(spellbook) {
 	const vueMode = featureToggles.vueMode;
-	vueStackEnabled = vueMode === 'auto' ? detectVueStack(spellbook) : vueMode === 'on';
+	const vueSpellbooks = [spellbook, ...workspacePackageTargets.map((target) => target.spellbook)];
+	vueStackEnabled = vueMode === 'auto' ? detectVueStack(vueSpellbooks) : vueMode === 'on';
 	dependenciesToInstall = [...coreDependencies];
 
 	if (featureToggles.cssEnabled) {
@@ -191,19 +245,21 @@ function configureDependencyPlan(spellbook) {
 	);
 }
 
-function detectVueStack(spellbook) {
+function detectVueStack(spellbooks) {
 	const projectDeps = new Set();
 
-	lintSections.forEach((section) => {
-		const shelf = spellbook[section];
-		if (!shelf) {
-			return;
-		}
-		Object.keys(shelf).forEach((dep) => {
-			if (cataloguedLintDependencies.has(dep)) {
+	spellbooks.forEach((spellbook) => {
+		lintSections.forEach((section) => {
+			const shelf = spellbook[section];
+			if (!shelf) {
 				return;
 			}
-			projectDeps.add(dep);
+			Object.keys(shelf).forEach((dep) => {
+				if (cataloguedLintDependencies.has(dep)) {
+					return;
+				}
+				projectDeps.add(dep);
+			});
 		});
 	});
 
@@ -236,7 +292,8 @@ function buildIncantationScripts({
 	autoMode,
 	cssExplicit,
 	markdownExplicit,
-	vueExplicit
+	vueExplicit,
+	recursive
 }) {
 	const eslintExtensions = ['.js', '.cjs', '.mjs', '.ts', '.mts', '.tsx', '.vue', '.json'];
 	if (markdownEnabled) {
@@ -267,6 +324,9 @@ function buildIncantationScripts({
 		markdownExplicit,
 		vueExplicit
 	});
+	if (recursive) {
+		lintconfigArgs.push('--recursive');
+	}
 
 	return {
 		lint: `${eslintCmd}${stylelintCmd}`,
@@ -285,7 +345,8 @@ function getLintconfigArgs({
 	autoMode,
 	cssExplicit,
 	markdownExplicit,
-	vueExplicit
+	vueExplicit,
+	recursive
 }) {
 	const installArgs = process.env.INSTALL_LINTCONFIG_ARGS?.trim();
 	if (installArgs) {
@@ -321,6 +382,7 @@ function resolveFeatureToggles(args) {
 	let cssExplicit = readBooleanEnv(process.env.INSTALL_CSS_EXPLICIT, false);
 	let markdownExplicit = readBooleanEnv(process.env.INSTALL_MARKDOWN_EXPLICIT, false);
 	let vueExplicit = readBooleanEnv(process.env.INSTALL_VUE_EXPLICIT, false);
+	let recursive = readBooleanEnv(process.env.INSTALL_RECURSIVE, false);
 	const unknownArgs = [];
 
 	args.forEach((arg) => {
@@ -346,6 +408,10 @@ function resolveFeatureToggles(args) {
 		} else if (arg === '--no-vue') {
 			vueMode = 'off';
 			vueExplicit = true;
+		} else if (arg === '--recursive' || arg === '-r') {
+			recursive = true;
+		} else if (arg === '--no-recursive') {
+			recursive = false;
 		} else {
 			unknownArgs.push(arg);
 		}
@@ -380,8 +446,74 @@ function resolveFeatureToggles(args) {
 		autoMode,
 		cssExplicit,
 		markdownExplicit,
-		vueExplicit
+		vueExplicit,
+		recursive
 	};
+}
+
+function discoverRecursiveWorkspacePackages(rootDir) {
+	let payload;
+	try {
+		payload = execSync('pnpm list -r --depth -1 --json', {
+			cwd: rootDir,
+			encoding: 'utf8',
+			stdio: ['ignore', 'pipe', 'pipe']
+		});
+	} catch {
+		console.warn('Recursive mode requires a pnpm workspace; skipping workspace package updates.');
+		return [];
+	}
+
+	let workspaceEntries;
+	try {
+		workspaceEntries = JSON.parse(payload);
+	} catch {
+		console.warn('Could not parse pnpm workspace package list; skipping workspace package updates.');
+		return [];
+	}
+
+	if (!Array.isArray(workspaceEntries)) {
+		return [];
+	}
+
+	const rootPath = path.resolve(rootDir);
+	return workspaceEntries
+		.map((entry) => path.resolve(entry.path || ''))
+		.filter((workspacePath) => workspacePath && workspacePath !== rootPath)
+		.map((workspacePath) => {
+			const packagePath = path.join(workspacePath, 'package.json');
+			if (!fs.existsSync(packagePath)) {
+				return null;
+			}
+
+			try {
+				const spellbook = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+				return { packagePath, spellbook };
+			} catch {
+				console.warn(`Could not parse ${packagePath}; skipping workspace package.`);
+				return null;
+			}
+		})
+		.filter(Boolean)
+		.filter(({ packagePath, spellbook }) => {
+			if (isRecursivePackageTarget(spellbook)) {
+				return true;
+			}
+
+			console.log(
+				`Skipping ${path.relative(rootDir, path.dirname(packagePath))}; no package build/lint/test script signals.`
+			);
+			return false;
+		});
+}
+
+function isRecursivePackageTarget(spellbook) {
+	if (!spellbook.name || typeof spellbook.name !== 'string') {
+		return false;
+	}
+
+	const scripts = spellbook.scripts || {};
+	return recursivePackageScriptSignals.some((scriptName) => typeof scripts[scriptName] === 'string');
 }
 
 function detectProjectFileFeatures(rootDir) {
@@ -467,7 +599,11 @@ function readVueModeEnv(value) {
 	return 'off';
 }
 
-function shouldPurgeDependency(name) {
+function shouldPurgeDependency(name, { removeCataloguedDependencies = false } = {}) {
+	if (removeCataloguedDependencies && cataloguedLintDependencies.has(name)) {
+		return true;
+	}
+
 	return lintTokens.some((token) => name.includes(token)) && !allowedLintDependencies.has(name);
 }
 
@@ -478,6 +614,7 @@ configureVsCodeSettings(featureToggles.cssEnabled);
 configureVsCodeExtensions(featureToggles.cssEnabled);
 removeStylelintConfigIfDisabled();
 inscribePackageScroll();
+inscribeWorkspacePackageScrolls();
 brewDependencies();
 
 function removeStylelintConfigIfDisabled() {

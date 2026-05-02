@@ -7,6 +7,7 @@ CSS_ENABLED=0
 MARKDOWN_ENABLED=1
 VUE_MODE="off"
 AUTO_MODE=0
+RECURSIVE=0
 CSS_EXPLICIT=0
 MARKDOWN_EXPLICIT=0
 VUE_EXPLICIT=0
@@ -25,6 +26,7 @@ Options:
   --md / --no-md     Enable or disable Markdown formatting (default: enabled)
   --vue / --no-vue   Force Vue lint stack on/off (default: off)
   --auto             Auto-detect CSS/Markdown usage and Vue deps
+  -r, --recursive    Update eligible pnpm workspace package scripts too
   -h, --help         Show this help
 EOF
 }
@@ -67,6 +69,9 @@ while [[ $# -gt 0 ]]; do
 			;;
 		--auto)
 			AUTO_MODE=1
+			;;
+		--recursive|-r)
+			RECURSIVE=1
 			;;
 		-h|--help)
 			usage
@@ -122,6 +127,9 @@ else
 		LINTCONFIG_ARGS+=(--no-vue)
 	fi
 fi
+if [[ "$RECURSIVE" -eq 1 ]]; then
+	LINTCONFIG_ARGS+=(--recursive)
+fi
 
 case "$(uname -s 2>/dev/null || true)" in
 	MINGW*|MSYS*|CYGWIN*)
@@ -137,6 +145,7 @@ case "$(uname -s 2>/dev/null || true)" in
 			INSTALL_MARKDOWN="$MARKDOWN_ENABLED" \
 			INSTALL_VUE="$VUE_MODE" \
 			INSTALL_AUTO="$AUTO_MODE" \
+			INSTALL_RECURSIVE="$RECURSIVE" \
 			INSTALL_CSS_EXPLICIT="$CSS_EXPLICIT" \
 			INSTALL_MARKDOWN_EXPLICIT="$MARKDOWN_EXPLICIT" \
 			INSTALL_VUE_EXPLICIT="$VUE_EXPLICIT" \
@@ -209,7 +218,7 @@ echo "Extracting installer files..."
 tar -xzf "$ARCHIVE_PATH" -C "$PWD"
 
 echo "Running configure-eslint.cjs..."
-INSTALL_CSS="$CSS_ENABLED" INSTALL_MARKDOWN="$MARKDOWN_ENABLED" INSTALL_VUE="$VUE_MODE" INSTALL_AUTO="$AUTO_MODE" INSTALL_CSS_EXPLICIT="$CSS_EXPLICIT" INSTALL_MARKDOWN_EXPLICIT="$MARKDOWN_EXPLICIT" INSTALL_VUE_EXPLICIT="$VUE_EXPLICIT" INSTALL_LINTCONFIG_ARGS="${LINTCONFIG_ARGS[*]}" node configure-eslint.cjs
+INSTALL_CSS="$CSS_ENABLED" INSTALL_MARKDOWN="$MARKDOWN_ENABLED" INSTALL_VUE="$VUE_MODE" INSTALL_AUTO="$AUTO_MODE" INSTALL_RECURSIVE="$RECURSIVE" INSTALL_CSS_EXPLICIT="$CSS_EXPLICIT" INSTALL_MARKDOWN_EXPLICIT="$MARKDOWN_EXPLICIT" INSTALL_VUE_EXPLICIT="$VUE_EXPLICIT" INSTALL_LINTCONFIG_ARGS="${LINTCONFIG_ARGS[*]}" node configure-eslint.cjs
 
 if [[ "$CSS_ENABLED" -eq 0 ]] && [[ "$AUTO_MODE" -eq 0 ]] && [[ -f "stylelint.config.cjs" ]]; then
 	echo "CSS disabled; removing stylelint.config.cjs..."

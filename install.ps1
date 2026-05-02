@@ -8,6 +8,7 @@ param(
     [switch]$Vue,
     [switch]$NoVue,
     [switch]$Auto,
+    [switch]$Recursive,
     [switch]$Markdown,
     [switch]$NoMarkdown,
     [switch]$Help
@@ -16,13 +17,14 @@ param(
 if ($Help) {
     Write-Host @"
 Usage:
-  Install-VSCodeEslintDefaults [-Version <v> | -Latest] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue] [-Auto]
+  Install-VSCodeEslintDefaults [-Version <v> | -Latest] [-Css | -NoCss] [-Md | -NoMd] [-Vue | -NoVue] [-Auto] [-Recursive]
 
 Defaults:
   Version: latest GitHub release (or $env:VSCODE_ESLINT_DEFAULTS_VERSION)
   Css: disabled unless -Css is provided
   Markdown: enabled unless -NoMd is provided
   Vue: disabled unless -Vue is provided (or inferred with -Auto)
+  Recursive: off unless -Recursive is provided; updates eligible pnpm workspace package scripts
 "@
     exit 0
 }
@@ -68,7 +70,8 @@ function Get-VSCodeEslintDefaultsLintconfigArgs {
         [bool]$AutoMode,
         [bool]$CssExplicit,
         [bool]$MarkdownExplicit,
-        [bool]$VueExplicit
+        [bool]$VueExplicit,
+        [bool]$Recursive
     )
 
     $args = @()
@@ -81,6 +84,9 @@ function Get-VSCodeEslintDefaultsLintconfigArgs {
         $args += if ($CssEnabled) { "--css" } else { "--no-css" }
         $args += if ($MarkdownEnabled) { "--md" } else { "--no-md" }
         $args += if ($VueMode -eq "on") { "--vue" } else { "--no-vue" }
+    }
+    if ($Recursive) {
+        $args += "--recursive"
     }
 
     return $args -join " "
@@ -97,6 +103,7 @@ function Install-VSCodeEslintDefaults {
         [switch]$Vue,
         [switch]$NoVue,
         [switch]$Auto,
+        [switch]$Recursive,
         [switch]$Markdown,
         [switch]$NoMarkdown
     )
@@ -116,7 +123,7 @@ function Install-VSCodeEslintDefaults {
     $cssExplicit = $Css -or $NoCss
     $markdownExplicit = $Md -or $NoMd -or $Markdown -or $NoMarkdown
     $vueExplicit = $Vue -or $NoVue
-    $lintconfigArgs = Get-VSCodeEslintDefaultsLintconfigArgs -CssEnabled $cssEnabled -MarkdownEnabled $markdownEnabled -VueMode $vueMode -AutoMode $Auto -CssExplicit $cssExplicit -MarkdownExplicit $markdownExplicit -VueExplicit $vueExplicit
+    $lintconfigArgs = Get-VSCodeEslintDefaultsLintconfigArgs -CssEnabled $cssEnabled -MarkdownEnabled $markdownEnabled -VueMode $vueMode -AutoMode $Auto -CssExplicit $cssExplicit -MarkdownExplicit $markdownExplicit -VueExplicit $vueExplicit -Recursive $Recursive
     $runningOnWindows = $env:OS -eq "Windows_NT"
 
     if (-not $runningOnWindows -and $resolvedVersion -ne "latest") {
@@ -133,6 +140,7 @@ function Install-VSCodeEslintDefaults {
             if ($markdownExplicit) { if ($markdownEnabled) { $bashArgs += "--md" } else { $bashArgs += "--no-md" } }
             if ($vueExplicit) { if ($vueMode -eq "on") { $bashArgs += "--vue" } else { $bashArgs += "--no-vue" } }
             if ($Auto) { $bashArgs += "--auto" }
+            if ($Recursive) { $bashArgs += "--recursive" }
 
             try {
                 Write-Host "Detected bash/curl/tar; using install.sh path..."
@@ -182,6 +190,7 @@ function Install-VSCodeEslintDefaults {
     $env:INSTALL_MARKDOWN = if ($markdownEnabled) { "1" } else { "0" }
     $env:INSTALL_VUE = $vueMode
     $env:INSTALL_AUTO = if ($Auto) { "1" } else { "0" }
+    $env:INSTALL_RECURSIVE = if ($Recursive) { "1" } else { "0" }
     $env:INSTALL_CSS_EXPLICIT = if ($cssExplicit) { "1" } else { "0" }
     $env:INSTALL_MARKDOWN_EXPLICIT = if ($markdownExplicit) { "1" } else { "0" }
     $env:INSTALL_VUE_EXPLICIT = if ($vueExplicit) { "1" } else { "0" }
@@ -202,5 +211,5 @@ function Install-VSCodeEslintDefaults {
 }
 
 if ($MyInvocation.MyCommand.Path -and $MyInvocation.InvocationName -ne ".") {
-    Install-VSCodeEslintDefaults -Version $Version -Latest:$Latest -Css:$Css -NoCss:$NoCss -Md:$Md -NoMd:$NoMd -Vue:$Vue -NoVue:$NoVue -Auto:$Auto -Markdown:$Markdown -NoMarkdown:$NoMarkdown
+    Install-VSCodeEslintDefaults -Version $Version -Latest:$Latest -Css:$Css -NoCss:$NoCss -Md:$Md -NoMd:$NoMd -Vue:$Vue -NoVue:$NoVue -Auto:$Auto -Recursive:$Recursive -Markdown:$Markdown -NoMarkdown:$NoMarkdown
 }
