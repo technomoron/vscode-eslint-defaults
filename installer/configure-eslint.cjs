@@ -5,23 +5,23 @@ const path = require('path');
 const hauntedArtifacts = ['.eslintignore', '.eslintrc.cjs', 'eslint.config.js'];
 
 const coreDependencies = [
-	'eslint@^10.3.0',
-	'prettier@^3.8.1',
+	'eslint@^10.8.0',
+	'prettier@^3.9.6',
 	'npm-run-all@^4.1.5',
 	'rimraf@^6.1.3',
 	'eslint-config-prettier@^10.1.8',
 	'jsonc-eslint-parser@^3.1.0',
-	'@typescript-eslint/eslint-plugin@^8.56.0',
-	'@typescript-eslint/parser@^8.56.0',
-	'eslint-plugin-import-x@^4.16.2'
+	'@typescript-eslint/eslint-plugin@^8.65.0',
+	'@typescript-eslint/parser@^8.65.0',
+	'eslint-plugin-import-x@^4.17.1'
 ];
 
-const markdownDependencies = ['@eslint/markdown@^8.0.1'];
-const cssDependencies = ['stylelint@^17.3.0', 'stylelint-config-standard-scss@^17.0.0'];
+const markdownDependencies = ['@eslint/markdown@^8.0.3'];
+const cssDependencies = ['stylelint@^17.14.1', 'stylelint-config-standard-scss@^17.0.0'];
 const vueDependencies = [
-	'eslint-plugin-vue@^10.8.0',
-	'vue-eslint-parser@^10.4.0',
-	'@vue/eslint-config-typescript@^14.7.0'
+	'eslint-plugin-vue@^10.10.0',
+	'vue-eslint-parser@^10.4.1',
+	'@vue/eslint-config-typescript@^14.9.0'
 ];
 
 const banishedDependencies = ['eslint', 'tslint'];

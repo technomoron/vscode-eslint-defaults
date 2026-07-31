@@ -4,6 +4,13 @@ CHANGES
 Unreleased
 ----------
 
+Version 1.0.45 (2026-07-31)
+---------------------------
+
+* Update lint dependencies and the lockfile to current compatible releases.
+* Require Node 24, declare the files included in the npm package, and remove the
+missing `installer.js` package entry point.
+* Allow pnpm to build `unrs-resolver` during installation.
 * Migrate import ordering from `eslint-plugin-import` to `eslint-plugin-import-x`
 for ESLint 10 compatibility.
 * Bump the bundled ESLint default to ESLint 10.

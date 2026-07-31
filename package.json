@@ -1,6 +1,6 @@
 {
 	"name": "@technomoron/vscode-eslint-defaults",
-	"version": "1.0.44",
+	"version": "1.0.45",
 	"description": "Default editor config and eslint config for js/ts/vue",
 	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
 	"bugs": {
@@ -15,29 +15,40 @@
 	"author": "Technomoron",
 	"type": "javascript",
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.0.0"
 	},
-	"main": "installer.js",
+	"files": [
+		".prettierrc.json",
+		".vscode",
+		"CHANGES",
+		"LICENSE",
+		"README.md",
+		"eslint.config.mjs",
+		"install.ps1",
+		"install.sh",
+		"installer",
+		"stylelint.config.cjs"
+	],
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "npm run lint",
 		"lint": "eslint --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json,.md ./ && stylelint --allow-empty-input \"**/*.{css,scss}\"",
 		"lintfix": "eslint --fix --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json,.md ./ && stylelint --allow-empty-input --fix \"**/*.{css,scss}\"",
 		"format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\"",
 		"lintconfig": "node installer/lintconfig.cjs"
 	},
 	"devDependencies": {
-		"@eslint/markdown": "^8.0.1",
-		"@typescript-eslint/eslint-plugin": "^8.56.0",
-		"@typescript-eslint/parser": "^8.56.0",
-		"@vue/eslint-config-typescript": "^14.7.0",
-		"eslint": "^10.3.0",
+		"@eslint/markdown": "^8.0.3",
+		"@typescript-eslint/eslint-plugin": "^8.65.0",
+		"@typescript-eslint/parser": "^8.65.0",
+		"@vue/eslint-config-typescript": "^14.9.0",
+		"eslint": "^10.8.0",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-import-x": "^4.16.2",
-		"eslint-plugin-vue": "^10.8.0",
+		"eslint-plugin-import-x": "^4.17.1",
+		"eslint-plugin-vue": "^10.10.0",
 		"jsonc-eslint-parser": "^3.1.0",
-		"prettier": "^3.8.1",
-		"stylelint": "^17.3.0",
+		"prettier": "^3.9.6",
+		"stylelint": "^17.14.1",
 		"stylelint-config-standard-scss": "^17.0.0",
-		"vue-eslint-parser": "^10.4.0"
+		"vue-eslint-parser": "^10.4.1"
 	}
 }

@@ -27,9 +27,13 @@ Flags:
 - Force the Vue lint stack on with `--vue` or `-Vue`.
 - Auto-detect CSS/Markdown usage and Vue dependencies with `--auto` or `-Auto`.
 - Update eligible pnpm workspace package scripts with `--recursive` / `-r` or `-Recursive`.
-- Installers default to the latest GitHub release. Pin a release with `--version=1.0.44` / `-Version 1.0.44`, or force latest with `--latest` / `-Latest`.
+- Installers default to the latest GitHub release. Pin a release with
+  `--version=1.0.45` / `-Version 1.0.45`, or force latest with `--latest` /
+  `-Latest`.
 
 The installer downloads the release tarball, lays down the config files, runs `configure-eslint.cjs`, and removes the configure script afterward. It also updates scripts in `package.json` and refreshes lint dependencies.
+
+Node.js 24 or newer is required.
 
 Markdown files are wrapped to 80 columns via the bundled `.prettierrc.json` (`proseWrap: "always"`).
 
