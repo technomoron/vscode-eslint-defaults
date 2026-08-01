@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*.*.*'  # Trigger on tags like v1.0.0
 
+permissions:
+  contents: write
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -22,6 +25,21 @@ jobs:
         with:
           node-version: 24
 
+      - name: Check that the tag matches package.json
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION." >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests and lint
+        run: npm test
+
       - name: Create .tgz and .zip archives
         run: |
           mkdir -p package-temp
@@ -31,12 +49,16 @@ jobs:
           zip -r ../installer.zip .
           cd ..
           rm -rf package-temp
+          sha256sum installer.tgz | awk '{print $1 "  installer.tgz"}' > installer.tgz.sha256
+          sha256sum installer.zip | awk '{print $1 "  installer.zip"}' > installer.zip.sha256
 
-      - name: Upload both archives to GitHub Release
+      - name: Upload archives and checksums to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             installer.tgz
+            installer.tgz.sha256
             installer.zip
+            installer.zip.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

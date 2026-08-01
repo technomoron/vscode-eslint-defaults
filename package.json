@@ -1,19 +1,19 @@
 {
 	"name": "@technomoron/vscode-eslint-defaults",
-	"version": "1.0.45",
+	"version": "1.1.0",
 	"description": "Default editor config and eslint config for js/ts/vue",
-	"homepage": "https://github.com/documentmedia/vscode-eslint-defaults#readme",
+	"homepage": "https://github.com/technomoron/vscode-eslint-defaults#readme",
 	"bugs": {
-		"url": "https://github.com/documentmedia/vscode-eslint-defaults/issues"
+		"url": "https://github.com/technomoron/vscode-eslint-defaults/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+ssh://git@github.com/documentmedia/vscode-eslint-defaults.git"
+		"url": "git+ssh://git@github.com/technomoron/vscode-eslint-defaults.git"
 	},
 	"license": "MIT",
 	"copyright": "Copyright (c) 2026 Bjørn Erik Jacobsen / Technomoron.com",
 	"author": "Technomoron",
-	"type": "javascript",
+	"type": "commonjs",
 	"engines": {
 		"node": ">=24.0.0"
 	},
@@ -30,13 +30,16 @@
 		"stylelint.config.cjs"
 	],
 	"scripts": {
-		"test": "npm run lint",
-		"lint": "eslint --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json,.md ./ && stylelint --allow-empty-input \"**/*.{css,scss}\"",
-		"lintfix": "eslint --fix --no-error-on-unmatched-pattern --ext .js,.cjs,.mjs,.ts,.mts,.tsx,.vue,.json,.md ./ && stylelint --allow-empty-input --fix \"**/*.{css,scss}\"",
+		"test": "npm run sync-configs:check && node --test && npm run lint",
+		"lint": "eslint --no-error-on-unmatched-pattern . && stylelint --allow-empty-input \"**/*.{css,scss}\"",
+		"lintfix": "eslint --fix --no-error-on-unmatched-pattern . && stylelint --allow-empty-input --fix \"**/*.{css,scss}\"",
 		"format": "prettier --write \"**/*.{js,jsx,cjs,mjs,ts,tsx,mts,vue,json,css,scss,md}\"",
+		"sync-configs": "node scripts/sync-root-configs.cjs",
+		"sync-configs:check": "node scripts/sync-root-configs.cjs --check",
 		"lintconfig": "node installer/lintconfig.cjs"
 	},
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
 		"@eslint/markdown": "^8.0.3",
 		"@typescript-eslint/eslint-plugin": "^8.65.0",
 		"@typescript-eslint/parser": "^8.65.0",
@@ -45,6 +48,7 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-import-x": "^4.17.1",
 		"eslint-plugin-vue": "^10.10.0",
+		"globals": "^17.8.0",
 		"jsonc-eslint-parser": "^3.1.0",
 		"prettier": "^3.9.6",
 		"stylelint": "^17.14.1",

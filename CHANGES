@@ -4,6 +4,55 @@ CHANGES
 Unreleased
 ----------
 
+Version 1.1.0 (2026-08-01)
+--------------------------
+
+* Stop extracting the release archive over the project. The installers unpack to
+a temporary directory and `configure-eslint.cjs` copies in only the files it
+needs, so an existing `.prettierrc.json`, `.vscode/settings.json` or
+`.vscode/extensions.json` is no longer overwritten.
+* Keep an existing Prettier config instead of replacing it, and merge VSCode
+settings and extension recommendations rather than overwriting them.
+* Save a `.bak` copy of any config file that gets replaced or removed, including
+legacy `.eslintrc*` files.
+* Look for `package.json` before writing or deleting anything, so running the
+installer in the wrong directory leaves that directory alone.
+* Only remove lint dependencies this installer manages. Project plugins such as
+`eslint-plugin-react`, `prettier-plugin-tailwindcss` and `stylelint-order` now
+survive an install. The old substring matching is available as
+`--purge-lint-deps` / `-PurgeLintDeps`.
+* Fail when the dependency install fails instead of reporting success, and point
+at `pnpm approve-builds` when pnpm skips a dependency install script.
+* Enable ESLint's recommended rules and declare Node/browser globals. `no-undef`,
+`no-debugger`, `no-empty` and the rest of the base set now report; previously
+only import ordering and three TypeScript rules were active. Projects upgrading
+from 1.0.x should expect new errors.
+* Drop the `--ext` flag from the generated scripts. ESLint 10 accepts but ignores
+it; file selection comes from `eslint.config.mjs` instead.
+* Lint `.cts` files, and stop ignoring `configure-eslint.cjs` in this repo.
+* Keep the existing `package.json` indentation instead of rewriting the file with
+two spaces.
+* Run `pnpm install` after `--recursive` edits workspace manifests, so the
+lockfile no longer drifts out of sync.
+* Publish `installer.tgz.sha256` with each release and verify it in `install.sh`,
+`install.ps1` and `lintconfig.cjs`. `lintconfig.cjs` can pin a version with
+`--version` and uses `GITHUB_TOKEN` when it is set.
+* Report an error when `install.sh --version` is missing its value instead of
+exiting silently without installing anything.
+* Let an explicit `-Version` win over `$VSCODE_ESLINT_DEFAULTS_VERSION` in
+`install.ps1`, check the `configure-eslint.cjs` exit code, and clear the
+`INSTALL_*` environment variables when the run finishes.
+* Call `install.ps1` from `install.sh` on Windows instead of carrying a second
+copy of the installer as an embedded PowerShell block.
+* Generate the root config files from `installer/` via `npm run sync-configs`,
+and fail `npm test` when the two differ.
+* Add tests for the installer, and run them along with lint in the release
+workflow before any archive is published.
+* Give the release workflow explicit `contents: write` permission and check that
+the tag matches the version in `package.json`.
+* Fix the repository, homepage and bugs URLs, and replace the invalid
+`"type": "javascript"` field with `"commonjs"`.
+
 Version 1.0.45 (2026-07-31)
 ---------------------------
 

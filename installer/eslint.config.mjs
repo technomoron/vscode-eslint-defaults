@@ -1,11 +1,21 @@
+import js from '@eslint/js';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import pluginImportX from 'eslint-plugin-import-x';
+import globals from 'globals';
 import * as jsoncParser from 'jsonc-eslint-parser';
-const TS_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,vue}'];
-const TS_PLUGIN_FILE_GLOBS = ['**/*.{ts,tsx,mts,cts,js,mjs,cjs,vue}'];
+
+// Vue and Markdown support is optional. The installer adds `eslint-plugin-vue`
+// and `@eslint/markdown` only when those features are enabled, and removes them
+// again when they are turned off, so the presence of the package is what
+// switches the matching rules on or off here.
+
+const JS_FILE_GLOBS = ['**/*.{js,mjs,cjs,jsx}'];
+const TS_FILE_GLOBS = ['**/*.{ts,mts,cts,tsx}'];
 const VUE_FILE_GLOBS = ['**/*.vue'];
+const SCRIPT_FILE_GLOBS = ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'];
+const TS_LIKE_FILE_GLOBS = ['**/*.{ts,mts,cts,tsx,vue}'];
 
 const { hasVueSupport, pluginVue, vueTypeScriptConfigs } = await loadVueSupport();
 const scopedVueTypeScriptConfigs = hasVueSupport ? scopeVueConfigs(vueTypeScriptConfigs).map(stripTypeScriptPlugin) : [];
@@ -59,14 +69,36 @@ export default [
 			'node_modules/.netlify',
 			'coverage',
 			'**/*.d.ts',
-			'configure-eslint.cjs',
-			'configure-eslint.js',
 			'*.config.js',
 			'public'
 		]
 	},
 	{
-		files: TS_PLUGIN_FILE_GLOBS,
+		// Base rules from ESLint itself. Scoped to script files so they are not
+		// applied to Markdown or JSON, which are parsed as different languages.
+		files: SCRIPT_FILE_GLOBS,
+		...js.configs.recommended
+	},
+	{
+		files: SCRIPT_FILE_GLOBS,
+		languageOptions: {
+			globals: {
+				...globals.node,
+				...globals.browser,
+				...globals.es2025
+			}
+		}
+	},
+	{
+		files: TS_LIKE_FILE_GLOBS,
+		rules: {
+			// TypeScript already reports unknown identifiers, and `no-undef`
+			// misfires on types and generics.
+			'no-undef': 'off'
+		}
+	},
+	{
+		files: SCRIPT_FILE_GLOBS,
 		plugins: {
 			'@typescript-eslint': tsPlugin
 		}
@@ -83,17 +115,13 @@ export default [
 		}
 	},
 	{
-		files: ['**/*.{ts,mts,tsx,js,mjs,cjs}'],
+		files: [...JS_FILE_GLOBS, ...TS_FILE_GLOBS],
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {
 				ecmaVersion: 2023,
 				sourceType: 'module',
 				extraFileExtensions: ['.vue']
-			},
-			globals: {
-				RequestInit: 'readonly',
-				process: 'readonly'
 			}
 		},
 		plugins: {
@@ -108,6 +136,8 @@ export default [
 					alphabetize: { order: 'asc', caseInsensitive: true }
 				}
 			],
+			// Superseded by the @typescript-eslint version on the next line.
+			'no-unused-vars': 'off',
 			'@typescript-eslint/no-explicit-any': ['warn'],
 			'@typescript-eslint/no-unused-vars': ['warn'],
 			'@typescript-eslint/no-require-imports': 'off'
@@ -203,7 +233,7 @@ function scopeVueConfigs(configs) {
 
 		return {
 			...config,
-			files: TS_FILE_GLOBS
+			files: TS_LIKE_FILE_GLOBS
 		};
 	});
 }

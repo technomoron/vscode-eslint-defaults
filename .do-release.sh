@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 VERSION=$(node -p "require('./package.json').version")
 
@@ -34,6 +35,9 @@ if git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
 	echo "Tag v${VERSION} already exists. Aborting." >&2
 	exit 1
 fi
+
+echo "Running tests..."
+npm test
 
 git tag -a "v${VERSION}" -m "Release version ${VERSION}"
 git push origin "v${VERSION}"
